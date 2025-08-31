@@ -1,0 +1,28 @@
+Application File:
+      frontend is inside client
+      client contains pages for each webpage, UI using react
+      client contain api for http request handling,functions
+
+      backend is inside server
+      server contain routes for http handling
+      server contain businesslogic for all function definitions, logic, database data access coding
+
+        
+To Run frontend:
+
+open git bash shell in vscode
+cd [---path---]/skynest/client  //navigate to client folder
+npm run dev
+
+
+To Run Backend:
+
+open SEPERATE git  bash shell in vs code
+cd skynest/server   //navigate to server folder
+npm run dev
+
+
+change database connection username and password to your own database credentials from .env file. (delete my existing password, avoid syncing your personal passwords, use .gitignore) 
+
+
+
