@@ -1,3 +1,10 @@
+guest-end  used by guest
+front desk end used by desk office staff
+service office end used by service office
+management used by management people to view their things
+backend is the mainbackend with server.js, database.js and Routes seperated for all ROLES
+
+
 Application File:
       frontend for guest is inside guest-end
 
