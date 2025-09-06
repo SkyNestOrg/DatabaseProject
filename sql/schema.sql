@@ -41,10 +41,10 @@ CREATE TABLE `Guest` (
 );
 
 CREATE TABLE Guest_User (
-    `username` VARCHAR(20) PRIMARY KEY,
+    `guest_id` SMALLINT NOT NULL ,
+    `username` VARCHAR(20) UNIQUE,
     `password` VARCHAR(255) NOT NULL,
-    `guest_id` SMALLINT NOT NULL UNIQUE,
-    FOREIGN KEY (`guest_id`) REFERENCES guest(`guest_id`)
+    PRIMARY KEY (`guest_id`)
 );
 
 CREATE TABLE `RoomType` (
