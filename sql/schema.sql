@@ -40,12 +40,11 @@ CREATE TABLE `Guest` (
   PRIMARY KEY (`guest_id`)
 );
 
-CREATE TABLE `Guest_User` (
-  `username` VARCHAR(20),
-  `password` VARCHAR(255), -- Increased for hashed passwords
-  `guest_id` SMALLINT NOT NULL,
-  PRIMARY KEY (`username`),
-  FOREIGN KEY (`guest_id`) REFERENCES `Guest`(`guest_id`)
+CREATE TABLE Guest_User (
+    `username` VARCHAR(20) PRIMARY KEY,
+    `password` VARCHAR(255) NOT NULL,
+    `guest_id` SMALLINT NOT NULL UNIQUE,
+    FOREIGN KEY (`guest_id`) REFERENCES guest(`guest_id`)
 );
 
 CREATE TABLE `RoomType` (

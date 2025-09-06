@@ -15,8 +15,8 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true })); // replaces body-parser.urlencoded()
 
 // guest routes (ESM style import instead of require)
-// eg: import customerLogin from "./routes/Customer/Login.js";
-//     app.use("/signin", customerLogin);
+import GuestRegister from "./routes/Guest/GuestRegister.js";
+app.use("/register", GuestRegister);
 
 //service office routes
 

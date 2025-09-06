@@ -46,3 +46,5 @@ INSERT INTO `Branch` (`branch_id`, `branch_name`, `address`, `city`, `contact_nu
 (1, 'SkyNest Urban', '123 Galle Face', 'Colombo 01', '0112345678'),
 (2, 'SkyNest Coast', '456 Galle Road', 'Galle', '0912345679'),
 (3, 'SkyNest Hills', '789 Colombo Road', 'Kandy', '0812345680');
+
+
