@@ -1,24 +1,20 @@
 Application File:
-      frontend is inside client
-      client contains pages for each webpage, UI using react
-      client contain api for http request handling,functions
+      frontend for guest is inside guest-end
 
-      backend is inside server
-      server contain routes for http handling
-      server contain businesslogic for all function definitions, logic, database data access coding
-
+      backend is inside backend folder.
+      server.js and db.js is inside backend folder
         
-To Run frontend:
+To Run guest-end: (front end for guest)
 
 open git bash shell in vscode
-cd [---path---]/skynest/client  //navigate to client folder
+cd [---path untill project---]/guest-end  //navigate to client folder
 npm run dev
 
 
 To Run Backend:
 
 open SEPERATE git  bash shell in vs code
-cd skynest/server   //navigate to server folder
+cd backend   //navigate to server folder
 npm run dev
 
 
