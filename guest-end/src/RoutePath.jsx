@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 //import { useEffect, useState } from "react";
-// import login from "./PersistentLogin"; // Commented out for now
+//import login from "./PersistentLogin"; // Commented out for now
 
 import Register from "./pages/Register";
-
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 // ===== COMMENTED OUT - OTHER LAYOUTS & COMPONENTS =====
-// import FullLayout from "./layout/FullLayout";
+ import FullLayout from "./layout/FullLayout";
 
 // ===== COMMENTED OUT - ALL OTHER PAGES =====
 // import Dashboard from './pages/Dashboard';
@@ -28,7 +29,7 @@ import Register from "./pages/Register";
 
 export default function AppRoutes() {
   // ===== COMMENTED OUT - LOGIN CHECK LOGIC =====
-  // const [loginInfo, setLoginInfo] = useState(null);
+  //  const [loginInfo, setLoginInfo] = useState(null);
 
   // useEffect(() => {
   //   async function fetchLoginInfo() {
@@ -38,8 +39,8 @@ export default function AppRoutes() {
   //   fetchLoginInfo();
   // }, []);
 
-  // ===== SIMPLIFIED - GUEST REGISTRATION ONLY =====
-  // For now, we'll just show the registration page without login checks
+ 
+
   
   return (
     <Router>
@@ -47,9 +48,10 @@ export default function AppRoutes() {
         {/* Active Route - Guest Registration */}
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Register />} /> {/* Default route */}
+        <Route path="/guestdashboard" element = {<Dashboard/>}/>
         
         {/* ===== COMMENTED OUT - LOGIN ROUTES ===== */}
-        {/* <Route path="/login" element={<LogIn />} /> */}
+        <Route path="/login" element={<Login />} />  
         
         {/* ===== COMMENTED OUT - ALL OTHER ROUTES ===== */}
         {/* Routes using FullLayout */}
@@ -83,12 +85,12 @@ export default function AppRoutes() {
         {/*   )} */}
         {/* </Route> */}
         
-        {/* Routes without FullLayout */}
-        {/* <Route path="/signin" element={<SignIn />} /> */}
-        {/* <Route path="/signup" element={<SignUp />} /> */}
-        {/* <Route path="/notfound" element={<NotFound />} /> */}
+        {/* Routes without FullLayout
+        <Route path="/login" element={<Login />} /> 
+        <Route path="/register" element={<Register />} />  */}
+        {/* <Route path="/notfound" element={<NotFound />} />  */}
         
-        {/* Catch-all route - for now redirects to register */}
+        {/* Catch-all route - for now redirects to register*/}
         <Route path="*" element={<Register />} />
       </Routes>
     </Router>

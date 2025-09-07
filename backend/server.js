@@ -17,6 +17,11 @@ app.use(express.urlencoded({ extended: true })); // replaces body-parser.urlenco
 // guest routes (ESM style import instead of require)
 import GuestRegister from "./routes/Guest/GuestRegister.js";
 app.use("/register", GuestRegister);
+import GuestLogin from "./routes/Guest/GuestLogin.js"
+app.use("/login", GuestLogin);
+import GuestTokenAuth from "./routes/Guest/GuestTokenAuth.js"
+app.use("/guesttokenauth", GuestTokenAuth );
+
 
 //service office routes
 
