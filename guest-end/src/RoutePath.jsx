@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 // ===== COMMENTED OUT - OTHER LAYOUTS & COMPONENTS =====
- import FullLayout from "./layout/FullLayout";
+import FullLayout from "./layout/FullLayout";
 
 // ===== COMMENTED OUT - ALL OTHER PAGES =====
 // import Dashboard from './pages/Dashboard';
@@ -26,6 +26,9 @@ import Dashboard from "./pages/Dashboard";
 // import LogIn from "./pages/LogIn";
 // import SignIn from "./pages/SignIn";
 // import SignUp from "./pages/SignUp";
+
+// Import the GuestProfile component
+import GuestProfile from "./pages/profile";
 
 export default function AppRoutes() {
   // ===== COMMENTED OUT - LOGIN CHECK LOGIC =====
@@ -48,7 +51,8 @@ export default function AppRoutes() {
         {/* Active Route - Guest Registration */}
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Register />} /> {/* Default route */}
-        <Route path="/guestdashboard" element = {<Dashboard/>}/>
+        <Route path="/guestdashboard" element={<Dashboard/>}/>
+        <Route path="/guest-profile" element={<GuestProfile/>}/>
         
         {/* ===== COMMENTED OUT - LOGIN ROUTES ===== */}
         <Route path="/login" element={<Login />} />  
