@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 
 // HotelCard component
@@ -47,8 +46,7 @@ const HotelCard = ({ branch }) => {
         </div>
         
         <div className="hotel-actions">
-          <button className="btn-primary">View Details</button>
-          <button className="btn-secondary">Book Now</button>
+          <button className="btn-book-now">Book Now</button>
         </div>
       </div>
     </div>
@@ -228,36 +226,26 @@ const App = () => {
         
         .hotel-actions {
           display: flex;
-          justify-content: space-between;
+          justify-content: center;
         }
         
-        .btn-primary, .btn-secondary {
-          padding: 10px 15px;
+        .btn-book-now {
+          padding: 12px 25px;
           border: none;
           border-radius: 5px;
           cursor: pointer;
           font-weight: 600;
-          transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        
-        .btn-primary {
-          background-color: #3498db;
+          transition: all 0.3s ease;
+          background-color: #1e88e5;
           color: white;
+          font-size: 1rem;
+          box-shadow: 0 4px 6px rgba(30, 136, 229, 0.3);
         }
         
-        .btn-secondary {
-          background-color: #ecf0f1;
-          color: #2c3e50;
-        }
-        
-        .btn-primary:hover {
-          background-color: #2980b9;
+        .btn-book-now:hover {
+          background-color: #1565c0;
           transform: translateY(-2px);
-        }
-        
-        .btn-secondary:hover {
-          background-color: #dfe6e9;
-          transform: translateY(-2px);
+          box-shadow: 0 6px 8px rgba(30, 136, 229, 0.4);
         }
         
         .loading, .error {
@@ -306,15 +294,6 @@ const App = () => {
           
           .app-header h1 {
             font-size: 2rem;
-          }
-          
-          .hotel-actions {
-            flex-direction: column;
-            gap: 10px;
-          }
-          
-          .btn-primary, .btn-secondary {
-            width: 100%;
           }
         }
       `}</style>
