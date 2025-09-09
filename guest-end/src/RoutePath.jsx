@@ -5,30 +5,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import GuestProfile from "./pages/profile";
+import Branches from "./pages/Branches"; 
+import RoomsAndServices from "./pages/RoomsAndServices";
 // ===== COMMENTED OUT - OTHER LAYOUTS & COMPONENTS =====
 import FullLayout from "./layout/FullLayout";
 
-// ===== COMMENTED OUT - ALL OTHER PAGES =====
-// import Dashboard from './pages/Dashboard';
-// import Reports from './pages/Reports';
-// import NotFound from './pages/NotFound';
-// import ProcessingOrders from './pages/ProcessingOrders';
-// import Pend ingOrders from './pages/PendingOrders';
-// import TrainTrips from './pages/TrainTrips';
-// import SelectSchedule from './pages/SelectSchedule';
-// import ScheduleHistory from './pages/ScheduleHistory';
-// import ProductsByCategory from './pages/AddProducts';
-// import AddDriver from './pages/AddDriver';
-// import AddDriverAssistant from './pages/AddDriverAssistant';
-// import ProfilePage from "./pages/Profile";
-// import WorkingHours from "./pages/WorkingHours";
-// import TrucksWorkingHours from "./pages/TrucksWorkingHours";
-// import LogIn from "./pages/LogIn";
-// import SignIn from "./pages/SignIn";
-// import SignUp from "./pages/SignUp";
-
-// Import the GuestProfile component
-import GuestProfile from "./pages/profile";
 
 export default function AppRoutes() {
   // ===== COMMENTED OUT - LOGIN CHECK LOGIC =====
@@ -53,6 +35,9 @@ export default function AppRoutes() {
         <Route path="/" element={<Register />} /> {/* Default route */}
         <Route path="/guestdashboard" element={<Dashboard/>}/>
         <Route path="/guest-profile" element={<GuestProfile/>}/>
+        <Route path="/branches" element={<Branches/>}/> {/* Added Branches route */}
+        <Route path = "/roomsandservices" element = {<RoomsAndServices/>} />
+        
         
         {/* ===== COMMENTED OUT - LOGIN ROUTES ===== */}
         <Route path="/login" element={<Login />} />  

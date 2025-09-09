@@ -23,6 +23,11 @@ import GuestTokenAuth from "./routes/Guest/GuestTokenAuth.js";
 app.use("/guesttokenauth", GuestTokenAuth );
 import GuestProfile from "./routes/Guest/GuestProfile.js";
 app.use("/guest", GuestProfile);
+import OurBranches from "./routes/Guest/OurBranches.js";
+app.use("/branches", OurBranches);
+import RoomsAndServices from './routes/Guest/RoomsAndServices.js'; 
+app.use('/roomsandservices',RoomsAndServices);
+
 
 //service office routes
 
