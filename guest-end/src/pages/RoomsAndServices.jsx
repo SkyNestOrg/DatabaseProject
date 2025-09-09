@@ -100,7 +100,6 @@ const RoomsAndServices = () => {
               </div>
               <div className="hotel-actions">
                 <button className="btn-primary">Book Now</button>
-                <button className="btn-secondary">View Details</button>
               </div>
             </div>
           </div>
@@ -150,6 +149,9 @@ const RoomsAndServices = () => {
           overflow: hidden;
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
 
         .hotel-card:hover {
@@ -161,6 +163,7 @@ const RoomsAndServices = () => {
           position: relative;
           height: 200px;
           overflow: hidden;
+          flex-shrink: 0;
         }
 
         .hotel-image img {
@@ -192,6 +195,13 @@ const RoomsAndServices = () => {
 
         .hotel-content {
           padding: 20px;
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+        }
+
+        .hotel-info {
+          flex-grow: 1;
         }
 
         .hotel-info h4 {
@@ -214,38 +224,30 @@ const RoomsAndServices = () => {
 
         .hotel-actions {
           display: flex;
-          justify-content: space-between;
-          margin-top: 15px;
+          justify-content: center;
+          margin-top: auto;
+          padding-top: 15px;
         }
 
-        .btn-primary,
-        .btn-secondary {
-          padding: 10px 15px;
+        .btn-primary {
+          padding: 12px 25px;
           border: none;
           border-radius: 5px;
           cursor: pointer;
           font-weight: 600;
-          transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn-primary {
-          background-color: #e74c3c;
+          transition: all 0.3s ease;
+          background-color: #1e88e5;
           color: white;
-        }
-
-        .btn-secondary {
-          background-color: #ecf0f1;
-          color: #2c3e50;
+          font-size: 1rem;
+          box-shadow: 0 4px 6px rgba(30, 136, 229, 0.3);
+          width: 100%;
+          max-width: 200px;
         }
 
         .btn-primary:hover {
-          background-color: #c0392b;
+          background-color: #1565c0;
           transform: translateY(-2px);
-        }
-
-        .btn-secondary:hover {
-          background-color: #dfe6e9;
-          transform: translateY(-2px);
+          box-shadow: 0 6px 8px rgba(30, 136, 229, 0.4);
         }
 
         .loading,
