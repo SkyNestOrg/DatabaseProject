@@ -1,0 +1,22 @@
+Backend API (fully simplified):
+// login
+POST /service/login
+
+// dashboard stats
+GET /service/dashboard
+
+// due services
+GET /service/requests
+
+// update service request status
+PUT /service/requests/:id
+
+// past services
+GET /service/history
+
+
+Staff logs in → JWT stored.
+Dashboard fetches quick stats.
+Due services list shows table (service ID, type, guest, room, status).
+Staff clicks "Mark Completed" → status updated, system auto adds cost to Bill.
+Past services list shows completed ones.
