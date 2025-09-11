@@ -41,3 +41,5 @@ router.get("/room-types", async (req, res) => {
 });
 
 export default router;
+
+

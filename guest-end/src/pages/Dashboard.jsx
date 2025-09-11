@@ -129,7 +129,6 @@ function Dashboard() {
     "Our Branches",
     "Rooms & Services",
     "Guest Profile",
-    "Search Accommodation",
     "Book Your Stay",
     "Request Services",
     "View Current Bookings",
