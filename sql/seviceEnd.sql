@@ -301,3 +301,6 @@ INSERT INTO Discount (discount_id, percentage, branch_id, room_type, start_date,
 INSERT INTO Taxes_and_Charges (revision_date, latest_tax_percentage, latest_surcharge_percentage) VALUES ('2025-09-01', 10, 5);
 INSERT INTO Taxes_and_Charges (revision_date, latest_tax_percentage, latest_surcharge_percentage) VALUES ('2025-09-10', 12, 6);
 INSERT INTO Taxes_and_Charges (revision_date, latest_tax_percentage, latest_surcharge_percentage) VALUES ('2025-09-20', 15, 7);
+
+--@block
+SELECT * FROM staff_user;
