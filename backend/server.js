@@ -4,6 +4,12 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
+// Importing routes
+import serviceAuthRoutes from './routes/serviceAuthRoutes.js';
+
+// importing middlewares
+import { authMiddleware } from './middleware/authMiddleware.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -19,6 +25,8 @@ app.use(express.urlencoded({ extended: true })); // replaces body-parser.urlenco
 //     app.use("/signin", customerLogin);
 
 //service office routes
+app.use("/service", serviceAuthRoutes);  // all routes in serviceAuthRoutes will be prefixed with /service
+
 
 //front desk office routes
 
