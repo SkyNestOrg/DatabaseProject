@@ -27,6 +27,8 @@ import OurBranches from "./routes/Guest/OurBranches.js";
 app.use("/branches", OurBranches);
 import RoomsAndServices from './routes/Guest/RoomsAndServices.js'; 
 app.use('/roomsandservices',RoomsAndServices);
+import GuestBook from './routes/Guest/GuestBook.js'; 
+app.use('/book',GuestBook);
 
 
 //service office routes

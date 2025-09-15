@@ -41,6 +41,8 @@ function Dashboard() {
       navigate('/branches');
     } else if (item === "Rooms & Services") {
       navigate('/roomsandservices'); // Add this line
+    } else if (item === "Book Your Stay") {
+      navigate('/book'); // Add this line
     }
     // Add other menu item handlers here as needed
   };

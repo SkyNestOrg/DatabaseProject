@@ -10,6 +10,7 @@ import Branches from "./pages/Branches";
 import RoomsAndServices from "./pages/RoomsAndServices";
 // ===== COMMENTED OUT - OTHER LAYOUTS & COMPONENTS =====
 import FullLayout from "./layout/FullLayout";
+import Book from "./pages/Book";
 
 
 export default function AppRoutes() {
@@ -37,7 +38,7 @@ export default function AppRoutes() {
         <Route path="/guest-profile" element={<GuestProfile/>}/>
         <Route path="/branches" element={<Branches/>}/> {/* Added Branches route */}
         <Route path = "/roomsandservices" element = {<RoomsAndServices/>} />
-        
+        <Route path = "/book" element = {<Book/>} />
         
         {/* ===== COMMENTED OUT - LOGIN ROUTES ===== */}
         <Route path="/login" element={<Login />} />  
