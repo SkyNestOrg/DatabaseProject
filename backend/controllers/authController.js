@@ -54,6 +54,8 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const {username, password} = req.body;
+        console.log("login attempt:", username);
+
         // validating that none are empty
         if (!username || !password) return res.status(400).json({message: "All fields are required"});
 
@@ -61,17 +63,26 @@ export const login = async (req, res) => {
             "SELECT * FROM staff_user WHERE username = ?",
             [username]
         );
-        if (users.length === 0) return res.status(400).json({message: "Invalid credentials"});
+        console.log("DB results:", users);
+        if (users.length === 0) {
+            console.log("No user found with that username");
+            return res.status(400).json({message: "Invalid credentials"});
+        }
 
         const user = users[0];
-        // passwword is hashed, so we need to compare
+        console.log("User found:", user);
+
+        // password is hashed, so we need to compare
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log("Password match:", isMatch);
 
-        if (!isMatch) return res.status(400).json({message: "Invalid credentials"});
-
+        if (!isMatch) {
+            console.log("Password does not match");
+            return res.status(400).json({message: "Invalid credentials"});
+        }
         const token = jwt.sign(
             { id: user.id, email: user.email },
-            process.env.JWT_SECRET,
+            process.env.JWT_SECRET_KEY,
             { expiresIn: '1h' }
         );
 
