@@ -30,6 +30,13 @@ app.use('/roomsandservices',RoomsAndServices);
 import GuestBook from './routes/Guest/GuestBook.js'; 
 app.use('/book',GuestBook);
 
+import getbranches from './routes/Guest/GetBranches.js'; 
+app.use('/getbranches', getbranches);  
+
+import getroomtypes from './routes/Guest/GetRoomType.js'; 
+app.use('/getroomtypes', getroomtypes); 
+
+
 
 //service office routes
 
