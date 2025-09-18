@@ -7,7 +7,7 @@ export function authMiddleware(req, res, next) {
   if (!token) return res.status(401).json({ message: "Access denied" });
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    const verified = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = verified; // attach user payload to request, contains { id: user.id }
     next(); // this allows the request to proceed to the next middleware or route handler
   } catch (err) {

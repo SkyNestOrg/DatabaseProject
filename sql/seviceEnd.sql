@@ -304,3 +304,28 @@ INSERT INTO Taxes_and_Charges (revision_date, latest_tax_percentage, latest_surc
 
 --@block
 SELECT * FROM staff_user;
+
+--@block
+SELECT * FROM service;
+
+--@block
+SELECT * FROM service_request;
+
+--@block
+UPDATE service_request
+SET status = 'cancelled'
+WHERE service_request_id = 3;
+
+--@block
+SELECT * FROM bill;
+
+
+--@block
+-- adding a trigger to update bill's service_total when there
+DELIMITER $$
+CREATE TRIGGER update_bill_after_service_completed
+AFTER UPDATE ON Service_Request
+FOR EACH ROW
+BEGIN
+  IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
+  

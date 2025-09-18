@@ -30,3 +30,11 @@ Past services list shows completed ones.
 
 login, dashboard is done
 next -> due services...
+
+/** TO DO (trigger) **/
+*************************************************************************************
+*** havent add a trigger yet, please be kind to add a trigger                     ***
+*** so whenever there is an status update, trigger automatically updates the Bill ***
+*************************************************************************************
+
+seperate file for constants, and please use that to avoid typos kind ah things. (enums and constants)
