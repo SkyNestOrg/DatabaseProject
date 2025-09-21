@@ -1,11 +1,11 @@
 // index.js (ESM version)
+import dotenv from "dotenv";
+// Load environment variables
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
 
-// Load environment variables
-dotenv.config();
 
 const app = express();
 
@@ -13,6 +13,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true })); // replaces body-parser.urlencoded()
+
+
+//common routes
+import TokenAuth from './routes/TokenAuth.js';
+app.use('/tokenauth', TokenAuth);
 
 // guest routes (ESM style import instead of require)
 import GuestRegister from "./routes/Guest/GuestRegister.js";
@@ -29,14 +34,17 @@ import RoomsAndServices from './routes/Guest/RoomsAndServices.js';
 app.use('/roomsandservices',RoomsAndServices);
 import GuestBook from './routes/Guest/GuestBook.js'; 
 app.use('/book',GuestBook);
-
 import getbranches from './routes/Guest/GetBranches.js'; 
 app.use('/getbranches', getbranches);  
-
 import getroomtypes from './routes/Guest/GetRoomType.js'; 
 app.use('/getroomtypes', getroomtypes); 
 
-
+import GuestService from './routes/Guest/GuestService.js'; 
+app.use('/guestservice', GuestService);
+import GetServices from './routes/Guest/GetServices.js'; 
+app.use('/getservices', GetServices);
+import GetRooms from './routes/Guest/GetRooms.js'; 
+app.use('/getrooms', GetRooms);
 
 //service office routes
 

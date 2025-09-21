@@ -9,7 +9,7 @@ function Dashboard() {
   useEffect(() => {
     // Check if user is logged in
     const userData = localStorage.getItem('user');
-    const authToken = localStorage.getItem('authToken');
+    const authToken = localStorage.getItem('token');
     
     if (userData && authToken) {
       setUser(JSON.parse(userData));
@@ -22,7 +22,7 @@ function Dashboard() {
 
   const handleLogout = () => {
     // Clear authentication data
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     // Redirect to login
     window.location.href = '/login';
@@ -43,6 +43,8 @@ function Dashboard() {
       navigate('/roomsandservices'); // Add this line
     } else if (item === "Book Your Stay") {
       navigate('/book'); // Add this line
+    } else if (item === "Request Services") {
+      navigate('/guestservice'); // Add this line
     }
     // Add other menu item handlers here as needed
   };

@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const secretkey = process.env.SECRET_KEY;
+
+const secretkey = process.env.JWT_SECRET;
+
 
 const router = express.Router();
 

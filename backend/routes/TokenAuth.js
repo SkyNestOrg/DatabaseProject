@@ -2,9 +2,10 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import { authenticateToken } from './Guest/middleware/authmiddleware.js';
 dotenv.config();
-const secretkey = process.env.SECRET_KEY;
 
+const secretkey = process.env.JWT_SECRET;
 const router = express.Router();
 
 // Middleware to parse cookies
@@ -36,4 +37,22 @@ router.get('/', (req, res, next) => {
     }
 });
 
+
+
+// Token verification endpoint using your existing middleware
+router.get('/verify', authenticateToken, (req, res) => {
+  res.json({
+    success: true,
+    message: 'Token is valid',
+    user: {
+      userId: req.user.userId,
+      username: req.user.username,
+      role: req.user.role
+    }
+  });
+});
+
+
 export default router;
+
+
