@@ -94,8 +94,8 @@ FOR EACH ROW
 BEGIN
     IF NEW.status = 'CheckedIn' AND OLD.status != 'CheckedIn' THEN
         -- Insert a new bill record when booking is confirmed
-        INSERT INTO Bill (bill_date, booking_id,room_total, service_total,sub_total,tax_amount, grand_total,due_amount ,bill_status)
-        VALUES (DATE(NOW()), NEW.booking_id, 0.00,0.00,0.00,0.00,0.00,0.00, 'Pending');
+        INSERT INTO Bill (bill_date, booking_id,room_total, service_total,tax_amount,due_amount ,bill_status)
+        VALUES (DATE(NOW()), NEW.booking_id, 0.00,0.00,0.00,0.00, 'Pending');
     END IF;
 END;
 //
