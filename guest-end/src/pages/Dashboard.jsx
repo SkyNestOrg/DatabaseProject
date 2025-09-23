@@ -45,6 +45,8 @@ function Dashboard() {
       navigate('/book'); // Add this line
     } else if (item === "Request Services") {
       navigate('/guestservice'); // Add this line
+    }else if (item === "View Current Bookings") {
+      navigate('/currentbookings'); // Add this line
     }
     // Add other menu item handlers here as needed
   };

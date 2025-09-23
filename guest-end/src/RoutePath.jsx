@@ -12,6 +12,7 @@ import RoomsAndServices from "./pages/RoomsAndServices";
 import FullLayout from "./layout/FullLayout";
 import Book from "./pages/Book";
 import GuestService from "./pages/Service";
+import CurrentBookings from "./pages/CurrentBookings";
 
 
 export default function AppRoutes() {
@@ -41,7 +42,7 @@ export default function AppRoutes() {
         <Route path = "/roomsandservices" element = {<RoomsAndServices/>} />
         <Route path = "/book" element = {<Book/>} />
         <Route path = "/guestservice" element = {<GuestService/>} />
-        
+        <Route path = "/currentbookings" element = {<CurrentBookings/>} />
         {/* ===== COMMENTED OUT - LOGIN ROUTES ===== */}
         <Route path="/login" element={<Login />} />  
         

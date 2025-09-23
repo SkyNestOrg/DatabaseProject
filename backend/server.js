@@ -1,12 +1,8 @@
-// index.js (ESM version)
 import dotenv from "dotenv";
-// Load environment variables
 dotenv.config();
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-
-
 const app = express();
 
 // Enable CORS for all routes
@@ -38,13 +34,14 @@ import getbranches from './routes/Guest/GetBranches.js';
 app.use('/getbranches', getbranches);  
 import getroomtypes from './routes/Guest/GetRoomType.js'; 
 app.use('/getroomtypes', getroomtypes); 
-
 import GuestService from './routes/Guest/GuestService.js'; 
 app.use('/guestservice', GuestService);
 import GetServices from './routes/Guest/GetServices.js'; 
 app.use('/getservices', GetServices);
 import GetRooms from './routes/Guest/GetRooms.js'; 
 app.use('/getrooms', GetRooms);
+import CurrentBookings from './routes/Guest/CurrentBookings.js'; 
+app.use('/currentbookings', CurrentBookings);
 
 //service office routes
 

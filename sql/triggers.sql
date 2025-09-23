@@ -86,17 +86,16 @@ END;
 DELIMITER ;
 
 -- Trigger 6: Create Bill when booking status = 'Confirmed'
-
 DELIMITER //
 
-CREATE TRIGGER after_booking_confirmed
+CREATE TRIGGER initialize_bill_on_checkin
 AFTER UPDATE ON booking
 FOR EACH ROW
 BEGIN
-    IF NEW.status = 'Confirmed' AND OLD.status != 'Confirmed' THEN
+    IF NEW.status = 'CheckedIn' AND OLD.status != 'CheckedIn' THEN
         -- Insert a new bill record when booking is confirmed
-        INSERT INTO Bill (booking_id, total_amount, bill_date, status)
-        VALUES (NEW.booking_id, 0.00, NOW(), 'Pending');
+        INSERT INTO Bill (bill_date, booking_id,room_total, service_total,sub_total,tax_amount, grand_total,due_amount ,bill_status)
+        VALUES (DATE(NOW()), NEW.booking_id, 0.00,0.00,0.00,0.00,0.00,0.00, 'Pending');
     END IF;
 END;
 //
