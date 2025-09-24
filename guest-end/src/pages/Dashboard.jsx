@@ -37,16 +37,17 @@ function Dashboard() {
         window.location.href = `/guest-profile?guest_id=${user.id}`;
       }
     } else if (item === "Our Branches") {
-      // Navigate to branches page using React Router
       navigate('/branches');
     } else if (item === "Rooms & Services") {
-      navigate('/roomsandservices'); // Add this line
+      navigate('/roomsandservices');
     } else if (item === "Book Your Stay") {
-      navigate('/book'); // Add this line
+      navigate('/book'); 
     } else if (item === "Request Services") {
-      navigate('/guestservice'); // Add this line
+      navigate('/guestservice'); 
     }else if (item === "View Current Bookings") {
-      navigate('/currentbookings'); // Add this line
+      navigate('/currentbookings'); 
+    }else if (item === "View My Bills") {
+      navigate('/bill'); 
     }
     // Add other menu item handlers here as needed
   };
@@ -138,8 +139,7 @@ function Dashboard() {
     "Book Your Stay",
     "Request Services",
     "View Current Bookings",
-    "View Bills",
-    "View Booking History",
+    "View My Bills"
   ];
 
   if (loading) {

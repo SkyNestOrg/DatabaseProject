@@ -42,6 +42,8 @@ import GetRooms from './routes/Guest/GetRooms.js';
 app.use('/getrooms', GetRooms);
 import CurrentBookings from './routes/Guest/CurrentBookings.js'; 
 app.use('/currentbookings', CurrentBookings);
+import GuestViewBill from './routes/Guest/GuestViewBill.js'; 
+app.use('/bill', GuestViewBill);
 
 //service office routes
 

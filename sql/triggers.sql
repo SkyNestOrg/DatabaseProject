@@ -85,7 +85,7 @@ END;
 
 DELIMITER ;
 
--- Trigger 6: Create Bill when booking status = 'Confirmed'
+-- Trigger 6: Create Bill when booking status = 'CheckedIn'
 DELIMITER //
 
 CREATE TRIGGER initialize_bill_on_checkin
@@ -101,3 +101,10 @@ END;
 //
 
 DELIMITER ;
+
+-- Trigger 7: Close the Bill when booking status = 'CheckedOut' -- To be COMPLETED BY Yohan
+
+
+-- CREATE TRIGGER close_bill_on_checkout_at_frontoffice
+
+
