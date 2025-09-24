@@ -1,0 +1,263 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* layout */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* sidebar */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(135deg, #1a4b8c, #2a5a9a);
+  color: white;
+  padding: 20px 0;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* sidebar (active) */
+.sidebar a {
+  color: white;          /* default link color */
+  text-decoration: none; /* remove underline */
+}
+
+.sidebar a:visited {
+  color: white;          /* visited links stay white */
+}
+
+
+.logo {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.logo span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.menu {
+  margin-top: 30px;
+}
+
+.menu-item {
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.menu-item:hover, .menu-item.active {
+  background-color: rgba(255,255,255,0.08);
+  border-left: 4px solid #ffcb05;
+}
+
+.menu-item i {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+/* main content */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header h2 {
+  color: #2a5a9a;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 2px solid #2a5a9a;
+}
+
+/* card */
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.card-header h3 {
+  color: #2a5a9a;
+  font-size: 20px;
+}
+
+/* form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10px;
+}
+
+.form-group {
+  flex: 1 0 calc(50% - 20px);
+  margin: 0 10px 20px;
+}
+
+.form-group.full-width {
+  flex: 1 0 calc(100% - 20px);
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border 0.3s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2a5a9a;
+  box-shadow: 0 0 0 2px rgba(42, 90, 154, 0.12);
+}
+
+/* buttons */
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background-color: #2a5a9a;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1a4b8c;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  margin-right: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #cbd5e0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* password eye */
+.password-toggle {
+  position: relative;
+}
+
+.password-toggle i {
+  position: absolute;
+  right: 15px;
+  top: 42px;
+  cursor: pointer;
+  color: #777;
+}
+
+/* required star */
+.required {
+  color: #e53e3e;
+}
+
+/* success message */
+.success-message {
+  background-color: #f0fff4;
+  color: #2d784c;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 20px;
+  border-left: 4px solid #48bb78;
+}
+
+/* recently registered list */
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.staff-table th, .staff-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+/* responsive */
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+
+  .form-group {
+    flex: 1 0 calc(100% - 20px);
+  }
+}
