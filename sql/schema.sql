@@ -28,7 +28,7 @@ CREATE TABLE `staff_logs` (
 );
 
 CREATE TABLE `Guest` (
-  `guest_id` SMALLINT AUTO_INCREMENT,
+  `guest_id` INT AUTO_INCREMENT,
   `first_name` VARCHAR(20) NOT NULL,
   `last_name` VARCHAR(20) NOT NULL,
   `email` VARCHAR(50) UNIQUE NOT NULL,
@@ -40,12 +40,11 @@ CREATE TABLE `Guest` (
   PRIMARY KEY (`guest_id`)
 );
 
-CREATE TABLE `Guest_User` (
-  `username` VARCHAR(20),
-  `password` VARCHAR(255), -- Increased for hashed passwords
-  `guest_id` SMALLINT NOT NULL,
-  PRIMARY KEY (`username`),
-  FOREIGN KEY (`guest_id`) REFERENCES `Guest`(`guest_id`)
+CREATE TABLE Guest_User (
+    `guest_id` INT AUTO_INCREMENT ,
+    `username` VARCHAR(20) UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`guest_id`)
 );
 
 CREATE TABLE `RoomType` (
@@ -66,8 +65,8 @@ CREATE TABLE `Room` (
 );
 
 CREATE TABLE `Booking` (
-  `booking_id` SMALLINT AUTO_INCREMENT,
-  `guest_id` SMALLINT NOT NULL,
+  `booking_id` INT AUTO_INCREMENT,
+  `guest_id` INT NOT NULL,
   `booking_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `branch_id` TINYINT NOT NULL, 
   `number_of_rooms` TINYINT NOT NULL,
@@ -77,16 +76,13 @@ CREATE TABLE `Booking` (
   FOREIGN KEY (`guest_id`) REFERENCES `Guest`(`guest_id`),
   FOREIGN KEY (`branch_id`) REFERENCES `Branch`(`branch_id`)
 );
--- Update Booking table to add the missing foreign key
-ALTER TABLE `Booking` 
-ADD COLUMN `bill_id` SMALLINT,
-ADD FOREIGN KEY (`bill_id`) REFERENCES `Bill`(`bill_id`);
+
 
 
 
 CREATE TABLE `Booked_Room` (
   `room_number` SMALLINT,
-  `booking_id` SMALLINT,
+  `booking_id` INT,
   `branch_id` TINYINT NOT NULL,
   `check_in` DATE NOT NULL,
   `check_out` DATE NOT NULL,
@@ -99,9 +95,9 @@ CREATE TABLE `Booked_Room` (
 );
 
 CREATE TABLE `Bill` (
-  `bill_id` SMALLINT AUTO_INCREMENT,
+  `bill_id` INT AUTO_INCREMENT,
   `bill_date` DATE DEFAULT (CURRENT_DATE),
-  `booking_id` SMALLINT NOT NULL,
+  `booking_id` INT NOT NULL,
   `room_total` NUMERIC(11,2) DEFAULT 0,
   `service_total` NUMERIC(11,2) DEFAULT 0,
   `sub_total` NUMERIC(11,2) GENERATED ALWAYS AS (`room_total` + `service_total`) STORED,
@@ -116,8 +112,8 @@ CREATE TABLE `Bill` (
 
 
 CREATE TABLE `Payment` (
-  `payment_reference` SMALLINT AUTO_INCREMENT,
-  `bill_id` SMALLINT NOT NULL,
+  `payment_reference` INT AUTO_INCREMENT,
+  `bill_id` INT NOT NULL,
   `payment_method` VARCHAR(20), 
   `paid_amount` NUMERIC(11,2) NOT NULL,
   `payment_date` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -135,11 +131,11 @@ CREATE TABLE `Service` (
 );
 
 CREATE TABLE `Service_Request` (
-  `service_request_id` SMALLINT AUTO_INCREMENT,
+  `service_request_id` INT AUTO_INCREMENT,
   `request_type` VARCHAR(20) NOT NULL,
   `date_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `booking_id` SMALLINT NOT NULL,
-  `room_number` SMALLINT NOT NULL,
+  `booking_id` INT NOT NULL,
+  `room_number` INT NOT NULL,
   `status` VARCHAR(15) DEFAULT 'Pending',
   `quantity` SMALLINT DEFAULT 1,
   `branch_id` TINYINT NOT NULL, 
@@ -150,7 +146,7 @@ CREATE TABLE `Service_Request` (
 );
 
 CREATE TABLE `Discount` (
-  `discount_id` TINYINT AUTO_INCREMENT,
+  `discount_id` INT AUTO_INCREMENT,
   `percentage` TINYINT NOT NULL, 
   `branch_id` TINYINT NOT NULL,
   `room_type` VARCHAR(20),
