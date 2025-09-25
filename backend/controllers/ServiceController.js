@@ -28,6 +28,10 @@ export const getDueService = async (req, res) => {
 export const updateServiceStatus = async (req, res) => {
     const { id } = req.params;
 
+    // Validate ID
+    if (!id || isNaN(id))
+        return res.status(400).json({ message: "Invalid service request ID" });
+    
     // to use atomic transactions (all or nothing)
     const connection = await db.getConnection();
 
@@ -49,8 +53,8 @@ export const updateServiceStatus = async (req, res) => {
 
         // getting service price
         const [services] = await connection.query(
-            "SELECT unit_quantity_charges FROM service WHERE service_type = ?",
-            [request.request_type]
+            "SELECT unit_quantity_charges FROM service WHERE service_type = ? AND branch_id = ?",
+            [request.request_type, request.branch_id]
         );
 
         if (services.length === 0) {

@@ -328,4 +328,27 @@ AFTER UPDATE ON Service_Request
 FOR EACH ROW
 BEGIN
   IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
-  
+
+--@block
+SELECT * FROM staff_user;
+
+--@block
+INSERT INTO Staff_User (username, password, official_role, branch_id) VALUES ('pamoth', '5616', 'Service', 1);
+
+--@block
+use skynestpamoth;
+
+--@block
+SELECT * FROM service_request;
+
+--@block
+SELECT * FROM service;
+
+--@block
+-- Add Spa service to branch 1
+INSERT INTO Service (service_type, unit_quantity_charges, branch_id, availability) 
+VALUES ('Spa', 50.00, 1, 'Available');
+
+-- Then add the service request
+INSERT INTO Service_Request (request_type, booking_id, room_number, branch_id)
+VALUES ('Spa', 1, 101, 1);
