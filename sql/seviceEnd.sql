@@ -352,3 +352,11 @@ VALUES ('Spa', 50.00, 1, 'Available');
 -- Then add the service request
 INSERT INTO Service_Request (request_type, booking_id, room_number, branch_id)
 VALUES ('Spa', 1, 101, 1);
+
+--@block
+UPDATE Service_Request
+SET status = 'Pending'
+WHERE service_request_id = 10;
+
+--@block
+SELECT * FROM staff_user;

@@ -3,19 +3,25 @@ import { SERVICE_STATUS, SERVICE_TYPES } from '../constants.js';
 
 export const getDueService = async (req, res) => {
     try {
+        const branchId = req.user?.branch_id;
+        if (!branchId) return res.status(400).json({ message: 'Branch information missing in token' });
+
         const [rows] = await db.query(
             `SELECT
             sr.service_request_id,
             sr.request_type,
             sr.status,
             sr.room_number,
+            sr.branch_id,
             g.first_name,
-            g.last_name
+            g.last_name,
+            sr.date_time,
+            sr.quantity
             FROM service_request sr
             JOIN booking b ON sr.booking_id = b.booking_id
             JOIN guest g ON b.guest_id = g.guest_id
-            WHERE sr.status = ?`,
-            [SERVICE_STATUS.PENDING]
+            WHERE sr.status = ? AND sr.branch_id = ?`,
+            [SERVICE_STATUS.PENDING, branchId]
         );
         res.json(rows);
     }
@@ -50,6 +56,18 @@ export const updateServiceStatus = async (req, res) => {
         }
 
         const request = requests[0];
+
+        // Security: ensure the staff's branch matches the service request's branch
+        const staffBranchId = req.user?.branch_id;
+        if (!staffBranchId) {
+            await connection.rollback();
+            return res.status(400).json({ message: 'Branch information missing in token' });
+        }
+
+        if (request.branch_id !== staffBranchId) {
+            await connection.rollback();
+            return res.status(403).json({ message: 'Not authorized to modify requests from other branches' });
+        }
 
         // getting service price
         const [services] = await connection.query(
@@ -109,3 +127,32 @@ export const updateServiceStatus = async (req, res) => {
         connection.release();
     }
 };
+
+export const getServiceHistory = async (req, res) => {
+    try {
+        const branchId = req.user?.branch_id;
+        if (!branchId) return res.status(400).json({ message: 'Branch information missing in token' });
+
+        const [rows] = await db.query(
+            `SELECT
+                sr.service_request_id,
+                sr.request_type,
+                sr.status,
+                sr.room_number,
+                sr.branch_id,
+                g.first_name,
+                g.last_name,
+                sr.date_time,
+                sr.quantity
+            FROM service_request sr
+            JOIN booking b ON sr.booking_id = b.booking_id
+            JOIN guest g ON b.guest_id = g.guest_id
+            WHERE sr.branch_id = ?`,
+            [branchId]
+        );
+        res.json(rows);
+    } catch (error) {
+        console.log("Error Fetching Service History:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+}

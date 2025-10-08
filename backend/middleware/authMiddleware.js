@@ -8,9 +8,11 @@ export function authMiddleware(req, res, next) {
 
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    req.user = verified; // attach user payload to request, contains { id: user.id }
+    // verified may contain { id, username, branch_id }
+    req.user = verified; // attach user payload to request
     next(); // this allows the request to proceed to the next middleware or route handler
   } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
+    console.error('JWT verification failed:', err);
+    res.status(403).json({ message: "Invalid or expired token" });
   }
 };

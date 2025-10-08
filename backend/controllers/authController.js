@@ -80,13 +80,17 @@ export const login = async (req, res) => {
             console.log("Password does not match");
             return res.status(400).json({message: "Invalid credentials"});
         }
-        const token = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: '1h' }
-        );
+        // include branch_id and username in token so downstream routes can filter by branch
+        const tokenPayload = {
+            id: user.id,
+            username: user.username,
+            branch_id: user.branch_id
+        };
 
-        res.status(200).json({message: "Login successful", token});
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+
+        // also return basic user info to the client so the frontend can show context
+        res.status(200).json({ message: "Login successful", token, user: { id: user.id, username: user.username, branch_id: user.branch_id } });
     } 
     catch (error) {
         console.error("Error during login:", error);
