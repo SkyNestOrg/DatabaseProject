@@ -12,7 +12,7 @@ export function authMiddleware(req, res, next) {
     req.user = verified; // attach user payload to request
     next(); // this allows the request to proceed to the next middleware or route handler
   } catch (err) {
-    console.error('JWT verification failed:', err);
-    res.status(403).json({ message: "Invalid or expired token" });
+    console.error("JWT verification failed:", err);
+    res.status(401).json({ message: "Invalid or expired token" });
   }
-};
+}

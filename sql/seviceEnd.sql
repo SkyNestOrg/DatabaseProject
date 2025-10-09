@@ -322,12 +322,20 @@ SELECT * FROM bill;
 
 --@block
 -- adding a trigger to update bill's service_total when there
-DELIMITER $$
 CREATE TRIGGER update_bill_after_service_completed
 AFTER UPDATE ON Service_Request
 FOR EACH ROW
-BEGIN
-  IF NEW.status = 'completed' AND OLD.status != 'completed' THEN
+UPDATE Bill b
+SET b.service_total = b.service_total + (
+  SELECT COALESCE(s.unit_quantity_charges * NEW.quantity, 0)
+  FROM service s 
+  WHERE s.service_type = NEW.request_type 
+  AND s.branch_id = NEW.branch_id
+  LIMIT 1
+)
+WHERE b.booking_id = NEW.booking_id
+AND NEW.status = 'completed' 
+AND OLD.status != 'completed';
 
 --@block
 SELECT * FROM staff_user;
@@ -342,7 +350,7 @@ use skynestpamoth;
 SELECT * FROM service_request;
 
 --@block
-SELECT * FROM service;
+SELECT * FROM guest;
 
 --@block
 -- Add Spa service to branch 1
@@ -356,7 +364,291 @@ VALUES ('Spa', 1, 101, 1);
 --@block
 UPDATE Service_Request
 SET status = 'Pending'
-WHERE service_request_id = 10;
+WHERE service_request_id = 1;
 
 --@block
 SELECT * FROM staff_user;
+
+--@block
+INSERT INTO Staff_User (username, password, official_role, branch_id) VALUES ('shakya', '1234', 'Manager', 1);
+
+--@block
+SELECT * FROM service_request;
+
+--@block
+CREATE INDEX idx_service_request_branch_status 
+ON service_request (branch_id, status);
+
+CREATE INDEX idx_service_request_branch_date 
+ON service_request (branch_id, date_time);
+
+--@block
+SELECT * FROM Branch;
+
+--@block
+SELECT * FROM taxes_and_charges;
+
+--@block
+-- Add more services to branch 1
+INSERT INTO Service (service_type, unit_quantity_charges, branch_id, availability) VALUES ('Gym', 15.00, 1, 'Available');
+INSERT INTO Service (service_type, unit_quantity_charges, branch_id, availability) VALUES ('Breakfast', 25.00, 1, 'Available');
+INSERT INTO Service (service_type, unit_quantity_charges, branch_id, availability) VALUES ('Airport Shuttle', 40.00, 1, 'Available');
+
+--adding more dummy data
+-- Add more dummy data for testing
+
+--@block
+-- Add more branches for better testing
+INSERT INTO Branch (branch_id, branch_name, address, city, contact_number) VALUES 
+(4, 'Downtown', '321 Business Ave', 'Capital City', '0555123456'),
+(5, 'Resort', '654 Paradise Blvd', 'Beach Town', '0666789012');
+
+--@block
+-- Add more staff users across different branches
+INSERT INTO Staff_User (username, password, official_role, branch_id) VALUES 
+('mike_manager', 'hash123', 'Manager', 2),
+('sara_front', 'hash456', 'Front Desk', 1),
+('tom_service', 'hash789', 'Service Staff', 1),
+('lisa_clean', 'hash321', 'Housekeeping', 2),
+('david_maint', 'hash654', 'Maintenance', 3),
+('anna_manager', 'hash987', 'Manager', 4),
+('peter_staff', 'hash147', 'Service Staff', 5);
+
+--@block
+-- Add more guests for realistic data
+INSERT INTO Guest (first_name, last_name, email, phone_number, address, passport_number, country_of_residence, date_of_birth) VALUES 
+('Emma', 'Johnson', 'emma.j@email.com', '0771234890', '10 Oak Street', 'P789012', 'USA', '1988-03-15'),
+('Lucas', 'Garcia', 'lucas.g@email.com', '0772345901', '20 Pine Avenue', 'P890123', 'Spain', '1992-07-22'),
+('Sophia', 'Miller', 'sophia.m@email.com', '0773456012', '30 Maple Road', 'P901234', 'Canada', '1987-11-08'),
+('Oliver', 'Davis', 'oliver.d@email.com', '0774567123', '40 Cedar Lane', 'P012345', 'Australia', '1995-02-28'),
+('Isabella', 'Wilson', 'isabella.w@email.com', '0775678234', '50 Birch Drive', 'P123450', 'UK', '1990-09-12'),
+('James', 'Taylor', 'james.t@email.com', '0776789345', '60 Elm Circle', 'P234501', 'France', '1983-12-03'),
+('Mia', 'Anderson', 'mia.a@email.com', '0777890456', '70 Ash Street', 'P345012', 'Germany', '1991-06-17'),
+('William', 'Thomas', 'william.t@email.com', '0778901567', '80 Willow Way', 'P456123', 'Italy', '1989-04-25');
+
+--@block
+-- Add more room types
+INSERT INTO RoomType (type_name, base_price, amenities) VALUES 
+('Deluxe', 200.00, 'King Bed, TV, WiFi, Mini Bar, City View'),
+('Executive', 350.00, 'King Bed, TV, WiFi, Mini Bar, Workspace, Lounge Access'),
+('Presidential', 500.00, 'Multiple Rooms, TV, WiFi, Full Kitchen, Butler Service');
+
+--@block
+-- Add more rooms across branches
+INSERT INTO Room (room_number, current_status, room_type, branch_id) VALUES 
+(103, 'Available', 'Deluxe', 1),
+(104, 'Occupied', 'Single', 1),
+(105, 'Maintenance', 'Double', 1),
+(202, 'Available', 'Executive', 2),
+(203, 'Occupied', 'Deluxe', 2),
+(204, 'Available', 'Single', 2),
+(301, 'Available', 'Presidential', 3),
+(302, 'Occupied', 'Executive', 3),
+(303, 'Available', 'Deluxe', 3),
+(401, 'Available', 'Suite', 1),
+(402, 'Occupied', 'Double', 1),
+(501, 'Available', 'Presidential', 2),
+(502, 'Available', 'Executive', 2);
+
+--@block
+-- Add more bookings with varied dates for testing date filtering
+INSERT INTO Booking (guest_id, booking_date, branch_id, number_of_rooms, number_of_pax, status) VALUES 
+(4, '2024-12-01 14:30:00', 1, 1, 2, 'Confirmed'),
+(5, '2024-12-15 16:45:00', 2, 2, 4, 'Confirmed'),
+(6, '2024-11-20 10:15:00', 1, 1, 1, 'Completed'),
+(7, '2024-11-05 12:00:00', 3, 3, 6, 'Confirmed'),
+(8, '2024-10-25 09:30:00', 1, 1, 2, 'Completed'),
+(1, '2024-10-10 11:20:00', 2, 2, 3, 'Confirmed'),
+(2, '2024-09-28 15:10:00', 1, 1, 1, 'Completed'),
+(3, '2024-09-15 13:45:00', 3, 1, 2, 'Cancelled'),
+(4, '2024-08-30 17:00:00', 1, 2, 4, 'Completed'),
+(5, '2024-08-12 08:30:00', 2, 1, 2, 'Completed');
+
+--@block
+-- Add more booked rooms
+INSERT INTO Booked_Room (room_number, booking_id, branch_id, check_in, check_out, status) VALUES 
+(103, 4, 1, '2024-12-05', '2024-12-08', 'Booked'),
+(202, 5, 2, '2024-12-20', '2024-12-25', 'Booked'),
+(104, 6, 1, '2024-11-25', '2024-11-28', 'Completed'),
+(301, 7, 3, '2024-11-10', '2024-11-15', 'Booked'),
+(105, 8, 1, '2024-10-28', '2024-10-31', 'Completed'),
+(203, 9, 2, '2024-10-15', '2024-10-18', 'Booked'),
+(401, 10, 1, '2024-10-01', '2024-10-05', 'Completed'),
+(302, 11, 3, '2024-09-20', '2024-09-23', 'Completed'),
+(402, 12, 1, '2024-09-05', '2024-09-08', 'Cancelled'),
+(501, 13, 2, '2024-08-15', '2024-08-20', 'Completed');
+
+--@block
+-- Add more bills
+INSERT INTO Bill (booking_id, room_total, service_total, tax_amount, due_amount, bill_status) VALUES 
+(4, 600.00, 0.00, 60.00, 660.00, 'Pending'),
+(5, 1400.00, 75.00, 147.50, 0.00, 'Paid'),
+(6, 200.00, 30.00, 23.00, 0.00, 'Paid'),
+(7, 900.00, 150.00, 105.00, 1155.00, 'Pending'),
+(8, 200.00, 45.00, 24.50, 0.00, 'Paid'),
+(9, 300.00, 60.00, 36.00, 0.00, 'Paid'),
+(10, 200.00, 25.00, 22.50, 0.00, 'Paid'),
+(11, 300.00, 80.00, 38.00, 0.00, 'Paid'),
+(12, 300.00, 0.00, 30.00, 0.00, 'Cancelled'),
+(13, 350.00, 120.00, 47.00, 0.00, 'Paid');
+
+--@block
+-- Add more services across all branches
+INSERT INTO Service (service_type, unit_quantity_charges, branch_id, availability) VALUES 
+-- Branch 1 services
+('Room Cleaning', 20.00, 1, 'Available'),
+('Concierge', 30.00, 1, 'Available'),
+('Valet Parking', 25.00, 1, 'Available'),
+('Pet Care', 35.00, 1, 'Available'),
+
+-- Branch 2 services
+('Laundry', 12.00, 2, 'Available'),
+('Spa', 60.00, 2, 'Available'),
+('Gym', 18.00, 2, 'Available'),
+('Restaurant', 45.00, 2, 'Available'),
+('Car Rental', 80.00, 2, 'Available'),
+
+-- Branch 3 services
+('Room Cleaning', 18.00, 3, 'Available'),
+('Laundry', 15.00, 3, 'Available'),
+('Massage', 70.00, 3, 'Available'),
+('Tour Guide', 100.00, 3, 'Available'),
+('Equipment Rental', 50.00, 3, 'Available');
+
+--@block
+-- Add many service requests with varied dates and statuses for testing
+INSERT INTO Service_Request (request_type, date_time, booking_id, room_number, status, quantity, branch_id) VALUES 
+-- Recent pending services (Branch 1)
+('Laundry', '2024-12-09 10:30:00', 4, 103, 'Pending', 2, 1),
+('Room Cleaning', '2024-12-09 14:15:00', 4, 103, 'Pending', 1, 1),
+('Breakfast', '2024-12-09 08:00:00', 4, 103, 'Completed', 2, 1),
+('Concierge', '2024-12-08 16:20:00', 4, 103, 'Pending', 1, 1),
+
+-- Branch 2 services
+('Room Service', '2024-12-08 19:30:00', 5, 202, 'Pending', 1, 2),
+('Laundry', '2024-12-07 09:45:00', 5, 202, 'Completed', 3, 2),
+('Spa', '2024-12-07 15:00:00', 5, 202, 'Completed', 1, 2),
+('Gym', '2024-12-06 07:30:00', 5, 202, 'Completed', 2, 2),
+
+-- Branch 1 - November services
+('Room Cleaning', '2024-11-27 10:00:00', 6, 104, 'Completed', 1, 1),
+('Laundry', '2024-11-26 14:30:00', 6, 104, 'Completed', 2, 1),
+('Airport Shuttle', '2024-11-25 06:00:00', 6, 104, 'Completed', 1, 1),
+
+-- Branch 3 - November services  
+('Room Cleaning', '2024-11-12 11:00:00', 7, 301, 'Completed', 3, 3),
+('Massage', '2024-11-13 16:00:00', 7, 301, 'Completed', 2, 3),
+('Tour Guide', '2024-11-14 09:00:00', 7, 301, 'Completed', 1, 3),
+('Equipment Rental', '2024-11-14 12:00:00', 7, 301, 'Pending', 1, 3),
+
+-- Branch 1 - October services
+('Breakfast', '2024-10-29 08:30:00', 8, 105, 'Completed', 2, 1),
+('Room Cleaning', '2024-10-30 10:45:00', 8, 105, 'Completed', 1, 1),
+('Valet Parking', '2024-10-28 18:00:00', 8, 105, 'Completed', 1, 1),
+
+-- Branch 2 - October services
+('Restaurant', '2024-10-16 19:30:00', 9, 203, 'Completed', 2, 2),
+('Car Rental', '2024-10-17 09:00:00', 9, 203, 'Completed', 1, 2),
+('Spa', '2024-10-17 14:00:00', 9, 203, 'Completed', 1, 2),
+
+-- Branch 1 - October services  
+('Pet Care', '2024-10-02 12:00:00', 10, 401, 'Completed', 1, 1),
+('Concierge', '2024-10-03 15:30:00', 10, 401, 'Completed', 1, 1),
+
+-- Branch 3 - September services
+('Laundry', '2024-09-21 11:30:00', 11, 302, 'Completed', 2, 3),
+('Room Cleaning', '2024-09-22 10:00:00', 11, 302, 'Completed', 1, 3),
+('Massage', '2024-09-22 16:00:00', 11, 302, 'Completed', 1, 3),
+
+-- Branch 1 - September services
+('Gym', '2024-09-06 07:00:00', 12, 402, 'Cancelled', 1, 1),
+('Laundry', '2024-09-06 14:00:00', 12, 402, 'Cancelled', 1, 1),
+
+-- Branch 2 - August services
+('Room Service', '2024-08-16 20:00:00', 13, 501, 'Completed', 3, 2),
+('Spa', '2024-08-17 10:00:00', 13, 501, 'Completed', 2, 2),
+('Restaurant', '2024-08-18 19:00:00', 13, 501, 'Completed', 2, 2),
+('Car Rental', '2024-08-19 08:00:00', 13, 501, 'Completed', 1, 2);
+
+--@block
+-- Add more payments
+INSERT INTO Payment (bill_id, payment_method, paid_amount, payment_date) VALUES 
+(5, 'Credit Card', 1622.50, '2024-12-20 15:30:00'),
+(6, 'Cash', 253.00, '2024-11-28 11:00:00'),
+(8, 'Credit Card', 269.50, '2024-10-31 14:20:00'),
+(9, 'Debit Card', 396.00, '2024-10-18 16:45:00'),
+(10, 'Credit Card', 247.50, '2024-10-05 12:30:00'),
+(11, 'Cash', 418.00, '2024-09-23 10:15:00'),
+(13, 'Credit Card', 517.00, '2024-08-20 13:45:00');
+
+--@block
+-- Add more discounts
+INSERT INTO Discount (percentage, branch_id, room_type, start_date, end_date) VALUES 
+(25, 1, 'Deluxe', '2024-12-01', '2024-12-31'),
+(30, 2, 'Executive', '2024-11-15', '2024-12-15'),
+(20, 3, 'Presidential', '2024-10-01', '2024-11-30'),
+(15, 1, 'Suite', '2024-09-01', '2024-09-30'),
+(12, 2, 'Single', '2024-08-01', '2024-08-31');
+
+--@block
+-- Add more tax revisions
+INSERT INTO Taxes_and_Charges (revision_date, latest_tax_percentage, latest_surcharge_percentage) VALUES 
+('2024-08-01', 8, 4),
+('2024-10-01', 10, 5),
+('2024-12-01', 12, 6);
+
+--@block
+-- Add staff logs for activity tracking
+INSERT INTO staff_logs (username, timestamp, action) VALUES 
+('pamoth', '2024-12-09 09:15:00', 'Login'),
+('pamoth', '2024-12-09 09:20:00', 'Viewed Due Services'),
+('pamoth', '2024-12-09 10:35:00', 'Completed Service Request #5'),
+('sara_front', '2024-12-09 08:30:00', 'Login'),
+('sara_front', '2024-12-09 08:45:00', 'Checked-in Guest'),
+('tom_service', '2024-12-09 11:00:00', 'Login'),
+('tom_service', '2024-12-09 11:15:00', 'Updated Service Status'),
+('mike_manager', '2024-12-08 09:00:00', 'Login'),
+('mike_manager', '2024-12-08 09:30:00', 'Reviewed Service History'),
+('lisa_clean', '2024-12-08 10:00:00', 'Completed Room Cleaning');
+
+--@block
+-- Verify the data
+SELECT 'Branch Count' as Table_Name, COUNT(*) as Count FROM Branch
+UNION ALL
+SELECT 'Staff Users', COUNT(*) FROM Staff_User
+UNION ALL  
+SELECT 'Guests', COUNT(*) FROM Guest
+UNION ALL
+SELECT 'Rooms', COUNT(*) FROM Room
+UNION ALL
+SELECT 'Bookings', COUNT(*) FROM Booking
+UNION ALL
+SELECT 'Service Requests', COUNT(*) FROM Service_Request
+UNION ALL
+SELECT 'Services', COUNT(*) FROM Service
+UNION ALL
+SELECT 'Bills', COUNT(*) FROM Bill;
+
+--@block
+-- Check service requests by status and branch for testing filters
+SELECT 
+    branch_id,
+    status,
+    COUNT(*) as count,
+    MIN(DATE(date_time)) as earliest_date,
+    MAX(DATE(date_time)) as latest_date
+FROM Service_Request 
+GROUP BY branch_id, status 
+ORDER BY branch_id, status;
+
+--@block
+-- Check service requests by service type for testing filters
+SELECT 
+    request_type,
+    COUNT(*) as count,
+    COUNT(CASE WHEN status = 'Pending' THEN 1 END) as pending,
+    COUNT(CASE WHEN status = 'Completed' THEN 1 END) as completed,
+    COUNT(CASE WHEN status = 'Cancelled' THEN 1 END) as cancelled
+FROM Service_Request 
+GROUP BY request_type 
+ORDER BY count DESC;
