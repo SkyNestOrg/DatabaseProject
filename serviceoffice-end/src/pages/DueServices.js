@@ -18,11 +18,11 @@ const DueServices = () => {
       try {
         const res = await api.get("/service/requests");
         console.log("Due services response:", res.data);
-        
+
         // Safely handle response data with fallbacks
         const servicesData = res.data?.services || res.data || [];
         const safeServices = Array.isArray(servicesData) ? servicesData : [];
-        
+
         setServices(safeServices);
         setError("");
       } catch (err) {
@@ -134,58 +134,66 @@ const DueServices = () => {
         </div>
       ) : (
         <div className="services-grid">
-          {services.map((service) => {
-            // Safety checks for service data
-            if (!service || typeof service !== 'object') {
-              console.warn('Invalid service data:', service);
-              return null;
-            }
-            
-            const serviceId = service.service_request_id || `unknown-${Math.random()}`;
-            const requestType = service.request_type || 'Unknown Service';
-            const guestName = `${service.first_name || ""} ${service.last_name || ""}`.trim() || "N/A";
-            const roomNumber = service.room_number || 'N/A';
-            const serviceDate = service.date_time ? new Date(service.date_time) : null;
-            const status = service.status || 'unknown';
-            
-            return (
-              <div key={serviceId} className="service-card">
-                <h3>🔧 {requestType}</h3>
-                <div className="service-info">
-                  <p>
-                    <strong>ID:</strong> {serviceId}
-                  </p>
-                  <p>
-                    <strong>Guest:</strong> {guestName}
-                  </p>
-                  <p>
-                    <strong>Room:</strong> {roomNumber}
-                  </p>
-                  <p>
-                    <strong>Date/Time:</strong>{" "}
-                    {serviceDate && !isNaN(serviceDate.getTime()) 
-                      ? serviceDate.toLocaleString() 
-                      : 'Invalid Date'
-                    }
-                  </p>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    <span className={`service-status ${status}`}>
-                      {status}
-                    </span>
-                  </p>
+          {services
+            .map((service) => {
+              // Safety checks for service data
+              if (!service || typeof service !== "object") {
+                console.warn("Invalid service data:", service);
+                return null;
+              }
+
+              const serviceId =
+                service.service_request_id || `unknown-${Math.random()}`;
+              const requestType = service.request_type || "Unknown Service";
+              const guestName =
+                `${service.first_name || ""} ${
+                  service.last_name || ""
+                }`.trim() || "N/A";
+              const roomNumber = service.room_number || "N/A";
+              const serviceDate = service.date_time
+                ? new Date(service.date_time)
+                : null;
+              const status = service.status || "unknown";
+
+              return (
+                <div key={serviceId} className="service-card">
+                  <h3>🔧 {requestType}</h3>
+                  <div className="service-info">
+                    <p>
+                      <strong>ID:</strong> {serviceId}
+                    </p>
+                    <p>
+                      <strong>Guest:</strong> {guestName}
+                    </p>
+                    <p>
+                      <strong>Room:</strong> {roomNumber}
+                    </p>
+                    <p>
+                      <strong>Date/Time:</strong>{" "}
+                      {serviceDate && !isNaN(serviceDate.getTime())
+                        ? serviceDate.toLocaleString()
+                        : "Invalid Date"}
+                    </p>
+                    <p>
+                      <strong>Status:</strong>{" "}
+                      <span className={`service-status ${status}`}>
+                        {status}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="service-actions">
+                    <button
+                      className="complete-button"
+                      onClick={() => markCompleted(serviceId)}
+                    >
+                      ✅ Mark Complete
+                    </button>
+                  </div>
                 </div>
-                <div className="service-actions">
-                  <button
-                    className="complete-button"
-                    onClick={() => markCompleted(serviceId)}
-                  >
-                    ✅ Mark Complete
-                  </button>
-                </div>
-              </div>
-            );
-          }).filter(Boolean)} {/* Filter out null entries */}
+              );
+            })
+            .filter(Boolean)}{" "}
+          {/* Filter out null entries */}
         </div>
       )}
 

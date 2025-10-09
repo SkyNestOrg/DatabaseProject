@@ -1,13 +1,13 @@
-import React from 'react';
-import './ErrorBoundary.css';
+import React from "react";
+import "./ErrorBoundary.css";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
+    this.state = {
+      hasError: false,
       error: null,
-      errorInfo: null 
+      errorInfo: null,
     };
   }
 
@@ -18,11 +18,11 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     // Log error details for debugging
-    console.error('Error caught by ErrorBoundary:', error, errorInfo);
-    
+    console.error("Error caught by ErrorBoundary:", error, errorInfo);
+
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
 
     // You can also log the error to an error reporting service here
@@ -30,10 +30,10 @@ class ErrorBoundary extends React.Component {
   }
 
   handleRetry = () => {
-    this.setState({ 
-      hasError: false, 
-      error: null, 
-      errorInfo: null 
+    this.setState({
+      hasError: false,
+      error: null,
+      errorInfo: null,
     });
   };
 
@@ -49,15 +49,17 @@ class ErrorBoundary extends React.Component {
           <div className="error-boundary-content">
             <div className="error-icon">🚨</div>
             <h2>Oops! Something went wrong</h2>
-            <p>We're sorry, but something unexpected happened in this section.</p>
-            
+            <p>
+              We're sorry, but something unexpected happened in this section.
+            </p>
+
             {this.props.showDetails && this.state.error && (
               <details className="error-details">
                 <summary>Technical Details</summary>
                 <div className="error-info">
                   <strong>Error:</strong>
                   <pre>{this.state.error.toString()}</pre>
-                  
+
                   {this.state.errorInfo && (
                     <>
                       <strong>Component Stack:</strong>
@@ -69,19 +71,13 @@ class ErrorBoundary extends React.Component {
             )}
 
             <div className="error-actions">
-              <button 
-                onClick={this.handleRetry}
-                className="retry-button"
-              >
+              <button onClick={this.handleRetry} className="retry-button">
                 🔄 Try Again
               </button>
-              <button 
-                onClick={this.handleReload}
-                className="reload-button"
-              >
+              <button onClick={this.handleReload} className="reload-button">
                 🔃 Reload Page
               </button>
-              <button 
+              <button
                 onClick={() => window.history.back()}
                 className="back-button"
               >

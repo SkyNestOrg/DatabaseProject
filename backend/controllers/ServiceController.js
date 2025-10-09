@@ -88,8 +88,9 @@ export const updateServiceStatus = async (req, res) => {
 
     const service = services[0];
     console.log("service is this :", service);
-    
-    const serviceCharge = (service.unit_quantity_charges || 0) * request.quantity;
+
+    const serviceCharge =
+      (service.unit_quantity_charges || 0) * request.quantity;
     console.log("Service Charge:", serviceCharge);
 
     // if service is already completed
@@ -116,13 +117,17 @@ export const updateServiceStatus = async (req, res) => {
 
     if (updatedRows[0].affected_rows === 0) {
       await connection.rollback();
-      return res.status(400).json({ 
-        message: "Service Request is already completed or was updated by another process" 
+      return res.status(400).json({
+        message:
+          "Service Request is already completed or was updated by another process",
       });
     }
 
     await connection.commit();
-    console.log("Service charge will be added to bill by trigger:", serviceCharge);
+    console.log(
+      "Service charge will be added to bill by trigger:",
+      serviceCharge
+    );
     res.json({
       message: "Service Request status updated to completed",
       costadded: serviceCharge,
@@ -144,8 +149,7 @@ export const getServiceHistory = async (req, res) => {
         .json({ message: "Branch information missing in token" });
     }
 
-    const { status, requestType, dateFrom, dateTo, limit, offset } =
-      req.query;
+    const { status, requestType, dateFrom, dateTo, limit, offset } = req.query;
 
     // pagination
     const resultLimit = parseInt(limit) || 20;

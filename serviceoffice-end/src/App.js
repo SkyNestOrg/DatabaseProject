@@ -20,11 +20,14 @@ function AppRoutes() {
   return (
     <div key={location.pathname} className="page-wrapper fade-in">
       <Routes location={location}>
-        <Route path="/login" element={
-          <ErrorBoundary>
-            <Login />
-          </ErrorBoundary>
-        } />
+        <Route
+          path="/login"
+          element={
+            <ErrorBoundary>
+              <Login />
+            </ErrorBoundary>
+          }
+        />
         <Route
           path="/dashboard"
           element={
@@ -63,7 +66,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>
+    <ErrorBoundary showDetails={process.env.NODE_ENV === "development"}>
       <Router>
         <ErrorBoundary>
           <Navbar />
