@@ -8,7 +8,6 @@ const HotelCard = ({ branch }) => {
       'Coast': 'coastal-branch.jpg',
       'Hills': 'hills-branch.jpg',
       'Urban': 'urban-branch.jpg',
-      'Default': 'default-branch.jpg'
     };
     
     // Find a matching image or use default

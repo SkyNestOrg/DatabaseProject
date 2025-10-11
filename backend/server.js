@@ -45,14 +45,54 @@ app.use('/currentbookings', CurrentBookings);
 import GuestViewBill from './routes/Guest/GuestViewBill.js'; 
 app.use('/bill', GuestViewBill);
 
+
+
+
+
 //service office routes
+import ServiceLogin from "./routes/ServiceOffice/ServiceLogin.js";
+app.use("/serviceofficelogin", ServiceLogin);
+import ServiceOfficeTokenAuth from "./routes/ServiceOffice/ServiceOfficeTokenAuth.js";
+app.use("/serviceofficetokenauth", ServiceOfficeTokenAuth );
+
+
+
 
 //front desk office routes
+import FrontOfficeLogin from "./routes/FrontDesk/FrontOfficeLogin.js";
+app.use("/frontofficelogin", FrontOfficeLogin);
+import FrontOfficeTokenAuth from "./routes/FrontDesk/FrontOfficeTokenAuth.js";
+app.use("/frontofficetokenauth", FrontOfficeTokenAuth );
+
+
 
 //management routes
+import ManagementLogin from "./routes/Management/ManagamentLogin.js";
+app.use("/managementlogin", ManagementLogin);
+import ManagementTokenAuth from "./routes/Management/ManagementTokenAuth.js";
+app.use("/managementtokenauth", ManagementTokenAuth );
+
+
+
 
 //admin routes
+import AdminLogin from "./routes/Admin/AdminLogin.js";
+app.use("/adminlogin", AdminLogin);
+import AdminTokenAuth from "./routes/Admin/AdminTokenAuth.js";
+app.use("/admintokenauth", AdminTokenAuth );
 
+import AddTaxes from "./routes/Admin/AddTaxes.js";
+app.use("/addtaxes", AddTaxes );
+import AddDiscounts from "./routes/Admin/AddDiscounts.js";
+app.use("/adddiscounts", AddDiscounts );
+import ViewDiscounts from "./routes/Admin/ViewDiscounts.js";
+app.use("/viewdiscounts", ViewDiscounts );
+import ViewTaxes from "./routes/Admin/ViewTaxes.js";
+app.use("/viewtaxes", ViewTaxes );
+import ManageStaff from "./routes/Admin/ManageStaff.js";
+app.use("/managestaff", ManageStaff );
+import ViewLogs from "./routes/Admin/ViewLogs.js";
+app.use("/viewlogs", ViewLogs );
 
 
 

@@ -18,11 +18,50 @@ const Book = () => {
   const [roomTypes, setRoomTypes] = useState([]);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
+  const [userExists, setUserExists] = useState(false);
+  const [userCheckLoading, setUserCheckLoading] = useState(true);
+
+
+  // useEffect(() => {
+  //   const userData = localStorage.getItem("user");
+  //   if (userData) {
+  //     const user = JSON.parse(userData);
+  //     setGuestId(user.id);
+  //   }
+
+  //   axios.get("http://localhost:5000/getbranches")
+  //     .then(res => setBranches(res.data.branches))
+  //     .catch(err => console.error("Error fetching branches:", err));
+
+  //   axios.get("http://localhost:5000/getroomtypes")
+  //     .then(res => setRoomTypes(res.data.roomtypes))
+  //     .catch(err => console.error("Error fetching room types:", err));
+  // }, []);
+
+    useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       const user = JSON.parse(userData);
       setGuestId(user.id);
+      
+      // ADD THIS BLOCK: Check if user exists in database
+      axios.get(`http://localhost:5000/book/check-user/${user.id}`)
+        .then(res => {
+          if (res.data.exists) {
+            setUserExists(true);
+          } else {
+            setMessage("User account not found. Please register first.");
+          }
+        })
+        .catch(err => {
+          console.error("Error checking user:", err);
+          setMessage("Error verifying user account.");
+        })
+        .finally(() => {
+          setUserCheckLoading(false);
+        });
+    } else {
+      setUserCheckLoading(false);
     }
 
     axios.get("http://localhost:5000/getbranches")
@@ -33,6 +72,12 @@ const Book = () => {
       .then(res => setRoomTypes(res.data.roomtypes))
       .catch(err => console.error("Error fetching room types:", err));
   }, []);
+
+
+
+
+
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -109,8 +154,16 @@ const Book = () => {
       <div className="book-form-wrapper">
         <h2>Book Rooms</h2>
 
+        {/* {!guestId ? (
+          <p className="message error">Please login to make a booking.</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="book-form"> */}
         {!guestId ? (
           <p className="message error">Please login to make a booking.</p>
+        ) : userCheckLoading ? (
+          <p className="message">Verifying your account...</p>
+        ) : !userExists ? (
+          <p className="message error">User account not found. Please Fill your details in GUEST PROFILE page in your DASHBOARD.</p>
         ) : (
           <form onSubmit={handleSubmit} className="book-form">
             {/* Branch */}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-//import
 
 const ViewBills = () => {
   const [bills, setBills] = useState([]);
@@ -51,7 +50,6 @@ const ViewBills = () => {
       currency: 'LKR'
     }).format(amount || 0);
   };
-
 
   const getStatusBadgeStyle = (status) => {
     const statusLower = status?.toLowerCase();
@@ -216,7 +214,7 @@ const ViewBills = () => {
                   
                   <div className="detail">
                     <span className="detail-label">Subtotal:</span>
-                    <span className="detail-value">{formatCurrency(bill.subtotal)}</span>
+                    <span className="detail-value">{formatCurrency(bill.sub_total)}</span>
                   </div>
                   
                   <div className="detail">
