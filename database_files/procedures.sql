@@ -114,3 +114,158 @@ proc_main: BEGIN
 END //
 
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS ViewGuestDetails;
+
+DELIMITER //
+
+      CREATE PROCEDURE ViewGuestDetails(IN p_booking_id SMALLINT)
+      BEGIN
+        SELECT 
+          g.guest_id, g.first_name, g.last_name, g.email,
+          g.phone_number, g.address, g.passport_number, g.country_of_residence
+        FROM Booking bk
+        JOIN Guest g ON bk.guest_id = g.guest_id
+        WHERE bk.booking_id = p_booking_id;
+      END;
+
+DELIMITER ;
+DROP PROCEDURE IF EXISTS ViewBranchDetails;
+
+DELIMITER //
+
+      
+      CREATE PROCEDURE ViewBranchDetails(IN p_booking_id SMALLINT)
+      BEGIN
+        SELECT
+          br.branch_id,
+          br.branch_name,
+          br.address AS branch_address,
+          br.city AS branch_city,
+          br.contact_number AS branch_contact
+        FROM Booking bk
+        JOIN Branch br ON bk.branch_id = br.branch_id
+        WHERE bk.booking_id = p_booking_id;
+      END;
+
+DELIMITER ;
+DROP PROCEDURE IF EXISTS ViewBillDetails;
+DELIMITER //
+
+      
+      CREATE PROCEDURE ViewBillDetails(IN p_booking_id SMALLINT)
+      BEGIN
+        SELECT
+          b.bill_id,
+          b.bill_date,
+          b.room_total,
+          b.service_total,
+          b.sub_total,
+          b.tax_amount,
+          b.grand_total,
+          b.due_amount,
+          b.bill_status
+        FROM Booking bk
+        LEFT JOIN Bill b ON bk.booking_id = b.booking_id
+        WHERE bk.booking_id = p_booking_id;
+      END;
+DELIMITER ;
+DROP PROCEDURE IF EXISTS ViewBookingDetails;
+
+DELIMITER //
+
+      
+      CREATE PROCEDURE ViewBookingDetails(IN p_booking_id SMALLINT)
+      BEGIN
+        SELECT
+          bk.booking_id,
+          bk.booking_date
+        FROM Booking bk
+        WHERE bk.booking_id = p_booking_id;
+      END;
+
+DELIMITER ;
+DROP PROCEDURE IF EXISTS ViewRoomCharges;
+
+DELIMITER //
+
+      
+      CREATE PROCEDURE ViewRoomCharges(IN p_booking_id SMALLINT)
+      BEGIN
+        SELECT 
+          br.room_number,
+          r.room_type,
+          rt.base_price,
+          br.check_in,
+          br.check_out,
+          DATEDIFF(br.check_out, br.check_in) AS nights,
+          COALESCE(d.percentage, 0) AS discount_percentage,
+          rt.base_price * DATEDIFF(br.check_out, br.check_in) AS base_charge,
+          rt.base_price * DATEDIFF(br.check_out, br.check_in) * (1 - COALESCE(d.percentage, 0) / 100) AS final_room_charge
+        FROM Booked_Room br
+        JOIN Room r ON br.room_number = r.room_number
+        JOIN RoomType rt ON r.room_type = rt.type_name
+        LEFT JOIN Discount d ON d.branch_id = br.branch_id 
+          AND (d.room_type = r.room_type OR d.room_type IS NULL)
+          AND d.start_date <= br.check_in 
+          AND d.end_date >= br.check_out
+        WHERE br.booking_id = p_booking_id;
+      END;
+
+DELIMITER ;
+DROP PROCEDURE IF EXISTS ViewServiceCharges;
+
+DELIMITER //
+
+      
+      CREATE PROCEDURE ViewServiceCharges(IN p_booking_id SMALLINT)
+      BEGIN
+        SELECT 
+          sr.service_request_id,
+          sr.request_type,
+          sr.quantity,
+          s.unit_quantity_charges,
+          sr.date_time,
+          (sr.quantity * s.unit_quantity_charges) AS total_service_charge
+        FROM Service_Request sr
+        JOIN Service s ON sr.request_type = s.service_type 
+          AND sr.branch_id = s.branch_id
+        WHERE sr.booking_id = p_booking_id;
+      END;
+DELIMITER ;
+DROP PROCEDURE IF EXISTS ViewPaymentAndSummary;
+DELIMITER //
+
+      
+      CREATE PROCEDURE ViewPaymentAndSummary(IN p_booking_id SMALLINT)
+      BEGIN
+        -- Payment History
+        SELECT 
+          p.payment_reference,
+          p.payment_method,
+          p.paid_amount,
+          p.payment_date
+        FROM Payment p
+        JOIN Bill b ON p.bill_id = b.bill_id
+        WHERE b.booking_id = p_booking_id
+        ORDER BY p.payment_date DESC;
+
+        -- Summary Totals from Bill table
+        SELECT 
+          b.room_total,
+          b.service_total,
+          b.sub_total,
+          b.tax_amount,
+          b.grand_total,
+          b.due_amount,
+          (SELECT COALESCE(SUM(p.paid_amount), 0)
+           FROM Payment p
+           WHERE p.bill_id = b.bill_id) AS total_paid,
+          b.bill_status
+        FROM Bill b
+        WHERE b.booking_id = p_booking_id;
+      END;
+
+DELIMITER ;
+
+
