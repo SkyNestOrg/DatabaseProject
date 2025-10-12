@@ -1,4 +1,4 @@
--- 1. Booking creation performance
+-- 1.0 Booking creation performance
 CREATE INDEX idx_room_branch_type_status ON room(branch_id, room_type, current_status);
 CREATE INDEX idx_booked_room_branch_dates_status ON booked_room(branch_id, check_in, check_out, status);
 
