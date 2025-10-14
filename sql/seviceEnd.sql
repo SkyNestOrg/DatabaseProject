@@ -697,21 +697,59 @@ WHERE service_request_id = 3;
 SELECT *
 FROM bill;
 --@block
--- adding a trigger to update bill's service_total when there
-CREATE TRIGGER update_bill_after_service_completed
+-- Enhanced trigger to update bill with service charges, taxes, and proper calculations
+DROP TRIGGER IF EXISTS update_bill_after_service_completed;
+DELIMITER // CREATE TRIGGER update_bill_service_total
 AFTER
-UPDATE ON Service_Request FOR EACH ROW
-UPDATE Bill b
-SET b.service_total = b.service_total + (
-    SELECT COALESCE(s.unit_quantity_charges * NEW.quantity, 0)
-    FROM service s
-    WHERE s.service_type = NEW.request_type
-      AND s.branch_id = NEW.branch_id
-    LIMIT 1
-  )
-WHERE b.booking_id = NEW.booking_id
-  AND NEW.status = 'completed'
-  AND OLD.status != 'completed';
+UPDATE ON service_request FOR EACH ROW BEGIN -- Run only when status changes to 'Completed'
+  IF NEW.status = 'Completed'
+  AND OLD.status <> 'Completed' THEN
+DECLARE service_charge DECIMAL(10, 2);
+DECLARE tax_percentage DECIMAL(10, 2) DEFAULT 0;
+DECLARE current_service_total DECIMAL(10, 2);
+DECLARE current_room_total DECIMAL(10, 2);
+DECLARE current_due_amount DECIMAL(10, 2);
+DECLARE service_increase DECIMAL(10, 2);
+DECLARE tax_increase DECIMAL(10, 2);
+-- Fetch service charge for the specific service type and branch
+SELECT unit_quantity_charges INTO service_charge
+FROM service
+WHERE service_type = NEW.request_type
+  AND branch_id = NEW.branch_id
+LIMIT 1;
+-- If no service charge found, skip the rest
+IF service_charge IS NULL THEN LEAVE BEGIN;
+END IF;
+-- Fetch current bill values and latest tax percentage in one go
+SELECT b.service_total,
+  b.room_total,
+  b.due_amount,
+  COALESCE(
+    (
+      SELECT latest_tax_percentage
+      FROM taxes_and_charges
+      ORDER BY revision_date DESC
+      LIMIT 1
+    ), 0
+  ) INTO current_service_total,
+  current_room_total,
+  current_due_amount,
+  tax_percentage
+FROM bill b
+WHERE b.booking_id = NEW.booking_id;
+-- Compute increases
+SET service_increase = service_charge * NEW.quantity;
+SET tax_increase = service_increase * tax_percentage / 100;
+-- Update the bill with new totals
+UPDATE bill
+SET service_total = current_service_total + service_increase,
+  tax_amount = (
+    current_room_total + current_service_total + service_increase
+  ) * tax_percentage / 100,
+  due_amount = current_due_amount + service_increase + tax_increase
+WHERE booking_id = NEW.booking_id;
+END IF;
+END // DELIMITER;
 --@block
 SELECT *
 FROM staff_user;
@@ -1534,3 +1572,78 @@ SELECT request_type,
 FROM Service_Request
 GROUP BY request_type
 ORDER BY count DESC;
+--@block
+SELECT *
+FROM service;
+
+--new trigger has been added below to update bill when service request is completed
+--@block
+DROP TRIGGER IF EXISTS update_bill_after_service_completed;
+CREATE TRIGGER update_bill_after_service_completed
+AFTER
+UPDATE ON service_request FOR EACH ROW BEGIN
+DECLARE service_charge DECIMAL(10, 2);
+DECLARE tax_percentage DECIMAL(10, 2) DEFAULT 0;
+DECLARE current_service_total DECIMAL(10, 2);
+DECLARE current_room_total DECIMAL(10, 2);
+DECLARE current_due_amount DECIMAL(10, 2);
+DECLARE service_increase DECIMAL(10, 2);
+DECLARE tax_increase DECIMAL(10, 2);
+-- Only when status changes to 'Completed'
+IF NEW.status = 'Completed'
+AND OLD.status <> 'Completed' THEN
+SELECT unit_quantity_charges INTO service_charge
+FROM service
+WHERE service_type = NEW.request_type
+    AND branch_id = NEW.branch_id
+LIMIT 1;
+IF service_charge IS NOT NULL THEN
+SELECT b.service_total,
+    b.room_total,
+    b.due_amount,
+    COALESCE(
+        (
+            SELECT latest_tax_percentage
+            FROM taxes_and_charges
+            ORDER BY revision_date DESC
+            LIMIT 1
+        ), 0
+    ) INTO current_service_total,
+    current_room_total,
+    current_due_amount,
+    tax_percentage
+FROM bill b
+WHERE b.booking_id = NEW.booking_id
+LIMIT 1;
+SET service_increase = service_charge * NEW.quantity;
+SET tax_increase = service_increase * tax_percentage / 100;
+UPDATE bill
+SET service_total = current_service_total + service_increase,
+    tax_amount = (
+        current_room_total + current_service_total + service_increase
+    ) * tax_percentage / 100,
+    due_amount = current_due_amount + service_increase + tax_increase
+WHERE booking_id = NEW.booking_id;
+END IF;
+END IF;
+END;
+
+--adding a new query to make some servicerequest pending to test
+--@block
+UPDATE service_request
+SET status = 'Pending'
+WHERE service_request_id IN (1, 2, 3);
+
+--@block
+SELECT *
+FROM service_request
+WHERE branch_id = 1;
+
+--@block
+SELECT * FROM bill;
+
+--@block
+SELECT * FROM service;
+
+--@block
+SELECT * FROM service_request;

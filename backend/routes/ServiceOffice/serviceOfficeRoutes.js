@@ -5,7 +5,12 @@ import { getDashboardStats } from "./serviceOfficeDashboardStat.js";
 import { getDueService } from "./serviceOfficeDueServices.js";
 import { updateServiceStatus } from "./serviceOfficeUpdateService.js";
 import { getServiceHistory } from "./serviceOfficeServiceHistory.js";
-import { getServices, addService, updateService, deleteService } from "./serviceManagement.js";
+import {
+  getServices,
+  addService,
+  updateService,
+  deleteService,
+} from "./serviceManagement.js";
 
 const router = express.Router();
 

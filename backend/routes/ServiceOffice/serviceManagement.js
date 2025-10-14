@@ -17,15 +17,14 @@ export const getServices = async (req, res) => {
       success: true,
       message: "Services retrieved successfully",
       services: rows,
-      branch_id: req.user.branch_id
+      branch_id: req.user.branch_id,
     });
-
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       success: false,
       message: "Server error while retrieving services",
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -34,20 +33,24 @@ export const getServices = async (req, res) => {
 export const addService = async (req, res) => {
   console.log("POST /services received:", req.body);
 
-  const { service_type, unit_quantity_charges, availability = 'Available' } = req.body;
+  const {
+    service_type,
+    unit_quantity_charges,
+    availability = "Available",
+  } = req.body;
 
   // Validate input
   if (!service_type || !unit_quantity_charges) {
     return res.status(400).json({
       success: false,
-      message: "Service type and unit quantity charges are required"
+      message: "Service type and unit quantity charges are required",
     });
   }
 
   if (unit_quantity_charges <= 0) {
     return res.status(400).json({
       success: false,
-      message: "Unit quantity charges must be a positive number"
+      message: "Unit quantity charges must be a positive number",
     });
   }
 
@@ -61,7 +64,7 @@ export const addService = async (req, res) => {
     if (existing.length > 0) {
       return res.status(409).json({
         success: false,
-        message: "Service already exists for this branch"
+        message: "Service already exists for this branch",
       });
     }
 
@@ -73,10 +76,10 @@ export const addService = async (req, res) => {
     );
 
     // Log the action
-    await db.query(
-      "INSERT INTO staff_logs (username, action) VALUES (?, ?)",
-      [req.user.username, `Added new service: ${service_type}`]
-    );
+    await db.query("INSERT INTO staff_logs (username, action) VALUES (?, ?)", [
+      req.user.username,
+      `Added new service: ${service_type}`,
+    ]);
 
     res.status(201).json({
       success: true,
@@ -85,16 +88,15 @@ export const addService = async (req, res) => {
         service_type,
         unit_quantity_charges,
         availability,
-        branch_id: req.user.branch_id
-      }
+        branch_id: req.user.branch_id,
+      },
     });
-
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       success: false,
       message: "Server error while adding service",
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -110,14 +112,15 @@ export const updateService = async (req, res) => {
   if (!unit_quantity_charges && !availability) {
     return res.status(400).json({
       success: false,
-      message: "At least one field (unit_quantity_charges or availability) is required"
+      message:
+        "At least one field (unit_quantity_charges or availability) is required",
     });
   }
 
   if (unit_quantity_charges && unit_quantity_charges <= 0) {
     return res.status(400).json({
       success: false,
-      message: "Unit quantity charges must be a positive number"
+      message: "Unit quantity charges must be a positive number",
     });
   }
 
@@ -131,7 +134,7 @@ export const updateService = async (req, res) => {
     if (existing.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Service not found for this branch"
+        message: "Service not found for this branch",
       });
     }
 
@@ -160,10 +163,10 @@ export const updateService = async (req, res) => {
     await db.query(updateQuery, updateValues);
 
     // Log the action
-    await db.query(
-      "INSERT INTO staff_logs (username, action) VALUES (?, ?)",
-      [req.user.username, `Updated service: ${serviceType}`]
-    );
+    await db.query("INSERT INTO staff_logs (username, action) VALUES (?, ?)", [
+      req.user.username,
+      `Updated service: ${serviceType}`,
+    ]);
 
     // Get updated service
     const [updated] = await db.query(
@@ -174,15 +177,14 @@ export const updateService = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Service updated successfully",
-      service: updated[0]
+      service: updated[0],
     });
-
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       success: false,
       message: "Server error while updating service",
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -203,7 +205,7 @@ export const deleteService = async (req, res) => {
     if (existing.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Service not found for this branch"
+        message: "Service not found for this branch",
       });
     }
 
@@ -214,22 +216,21 @@ export const deleteService = async (req, res) => {
     );
 
     // Log the action
-    await db.query(
-      "INSERT INTO staff_logs (username, action) VALUES (?, ?)",
-      [req.user.username, `Disabled service: ${serviceType}`]
-    );
+    await db.query("INSERT INTO staff_logs (username, action) VALUES (?, ?)", [
+      req.user.username,
+      `Disabled service: ${serviceType}`,
+    ]);
 
     res.status(200).json({
       success: true,
-      message: "Service disabled successfully"
+      message: "Service disabled successfully",
     });
-
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       success: false,
       message: "Server error while disabling service",
-      error: err.message
+      error: err.message,
     });
   }
 };
