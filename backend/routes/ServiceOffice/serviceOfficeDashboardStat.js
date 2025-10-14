@@ -1,4 +1,4 @@
-import db from "../db/connection.js";
+import db from "../../db.js";
 
 export const getDashboardStats = async (req, res) => {
   try {

@@ -1,45 +1,87 @@
-// index.js (ESM version)
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
-
-// Importing routes
-import serviceAuthRoutes from './routes/serviceAuthRoutes.js';
-
-// importing middlewares
-import { authMiddleware } from './middleware/authMiddleware.js';
-
-// Load environment variables
-dotenv.config();
-
 const app = express();
 
 // Enable CORS for all routes
-app.use((req, res, next) => {
-  console.log("Incoming request:", req.method, req.url);
-  next();
-});
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true })); // replaces body-parser.urlencoded()
 
+//common routes
+import TokenAuth from "./routes/TokenAuth.js";
+app.use("/tokenauth", TokenAuth);
+
 // guest routes (ESM style import instead of require)
-// eg: import customerLogin from "./routes/Customer/Login.js";
-//     app.use("/signin", customerLogin);
+import GuestRegister from "./routes/Guest/GuestRegister.js";
+app.use("/register", GuestRegister);
+import GuestLogin from "./routes/Guest/GuestLogin.js";
+app.use("/login", GuestLogin);
+import GuestTokenAuth from "./routes/Guest/GuestTokenAuth.js";
+app.use("/guesttokenauth", GuestTokenAuth);
+import GuestProfile from "./routes/Guest/GuestProfile.js";
+app.use("/guest", GuestProfile);
+import OurBranches from "./routes/Guest/OurBranches.js";
+app.use("/branches", OurBranches);
+import RoomsAndServices from "./routes/Guest/RoomsAndServices.js";
+app.use("/roomsandservices", RoomsAndServices);
+import GuestBook from "./routes/Guest/GuestBook.js";
+app.use("/book", GuestBook);
+import getbranches from "./routes/Guest/GetBranches.js";
+app.use("/getbranches", getbranches);
+import getroomtypes from "./routes/Guest/GetRoomType.js";
+app.use("/getroomtypes", getroomtypes);
+import GuestService from "./routes/Guest/GuestService.js";
+app.use("/guestservice", GuestService);
+import GetServices from "./routes/Guest/GetServices.js";
+app.use("/getservices", GetServices);
+import GetRooms from "./routes/Guest/GetRooms.js";
+app.use("/getrooms", GetRooms);
+import CurrentBookings from "./routes/Guest/CurrentBookings.js";
+app.use("/currentbookings", CurrentBookings);
+import GuestViewBill from "./routes/Guest/GuestViewBill.js";
+app.use("/bill", GuestViewBill);
 
 //service office routes
-app.use("/service", serviceAuthRoutes);  // all routes in serviceAuthRoutes will be prefixed with /service
-
+// import ServiceLogin from "./routes/ServiceOffice/ServiceLogin.js";
+// app.use("/serviceofficelogin", ServiceLogin);
+// import ServiceOfficeTokenAuth from "./routes/ServiceOffice/ServiceOfficeTokenAuth.js";
+// app.use("/serviceofficetokenauth", ServiceOfficeTokenAuth );
+import serviceOfficeRoutes from "./routes/ServiceOffice/serviceOfficeRoutes.js";
+app.use("/service", serviceOfficeRoutes); // all routes in serviceAuthRoutes will be prefixed with /service
 
 //front desk office routes
+import FrontOfficeLogin from "./routes/FrontDesk/FrontOfficeLogin.js";
+app.use("/frontofficelogin", FrontOfficeLogin);
+import FrontOfficeTokenAuth from "./routes/FrontDesk/FrontOfficeTokenAuth.js";
+app.use("/frontofficetokenauth", FrontOfficeTokenAuth);
 
 //management routes
+import ManagementLogin from "./routes/Management/ManagamentLogin.js";
+app.use("/managementlogin", ManagementLogin);
+import ManagementTokenAuth from "./routes/Management/ManagementTokenAuth.js";
+app.use("/managementtokenauth", ManagementTokenAuth);
 
 //admin routes
+import AdminLogin from "./routes/Admin/AdminLogin.js";
+app.use("/adminlogin", AdminLogin);
+import AdminTokenAuth from "./routes/Admin/AdminTokenAuth.js";
+app.use("/admintokenauth", AdminTokenAuth);
 
-
-
+import AddTaxes from "./routes/Admin/AddTaxes.js";
+app.use("/addtaxes", AddTaxes);
+import AddDiscounts from "./routes/Admin/AddDiscounts.js";
+app.use("/adddiscounts", AddDiscounts);
+import ViewDiscounts from "./routes/Admin/ViewDiscounts.js";
+app.use("/viewdiscounts", ViewDiscounts);
+import ViewTaxes from "./routes/Admin/ViewTaxes.js";
+app.use("/viewtaxes", ViewTaxes);
+import ManageStaff from "./routes/Admin/ManageStaff.js";
+app.use("/managestaff", ManageStaff);
+import ViewLogs from "./routes/Admin/ViewLogs.js";
+app.use("/viewlogs", ViewLogs);
 
 
 // Example route
