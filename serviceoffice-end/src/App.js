@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import DueServices from "./pages/DueServices";
 import ServiceHistory from "./pages/ServiceHistory";
+import ServiceManagement from "./pages/ServiceManagement";
 import "./App.css";
 import Navbar from "./components/layout/Navbar";
 import ProtectedRoutes from "./components/auth/ProtectedRoutes";
@@ -54,6 +55,16 @@ function AppRoutes() {
             <ErrorBoundary>
               <ProtectedRoutes>
                 <ServiceHistory />
+              </ProtectedRoutes>
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/service-management"
+          element={
+            <ErrorBoundary>
+              <ProtectedRoutes>
+                <ServiceManagement />
               </ProtectedRoutes>
             </ErrorBoundary>
           }

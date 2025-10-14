@@ -33,6 +33,12 @@ function Navbar() {
             <li>
               <Link to="/due-services">Due Services</Link>
             </li>
+            <li>
+              <Link to="/service-history">Service History</Link>
+            </li>
+            <li>
+              <Link to="/service-management">Manage Services</Link>
+            </li>
             {isAuthenticated && (
               <>
                 <li className="branch-display">
@@ -69,5 +75,4 @@ function Navbar() {
   );
 }
 
-// <li><Link to="/service-history">Service History</Link></li>
 export default Navbar;

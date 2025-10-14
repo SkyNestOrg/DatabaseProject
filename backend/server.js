@@ -51,9 +51,9 @@ app.use("/tokenauth", TokenAuth);
 // import ServiceOfficeTokenAuth from "./routes/ServiceOffice/ServiceOfficeTokenAuth.js";
 // app.use("/serviceofficetokenauth", ServiceOfficeTokenAuth );
 import serviceOfficeRoutes from "./routes/ServiceOffice/serviceOfficeRoutes.js";
-import serviceAuthRoutes from "./routes/serviceAuthRoutes.js";
+// import serviceAuthRoutes from "./routes/serviceAuthRoutes.js";
 app.use("/service", serviceOfficeRoutes); // all routes in serviceOfficeRoutes will be prefixed with /service
-app.use("/serviceauth", serviceAuthRoutes); // alternative service auth routes
+
 
 //front desk office routes
 // TODO: FrontDesk routes directory doesn't exist - these will cause errors

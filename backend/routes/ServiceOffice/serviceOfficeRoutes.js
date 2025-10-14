@@ -5,6 +5,7 @@ import { getDashboardStats } from "./serviceOfficeDashboardStat.js";
 import { getDueService } from "./serviceOfficeDueServices.js";
 import { updateServiceStatus } from "./serviceOfficeUpdateService.js";
 import { getServiceHistory } from "./serviceOfficeServiceHistory.js";
+import { getServices, addService, updateService, deleteService } from "./serviceManagement.js";
 
 const router = express.Router();
 
@@ -15,5 +16,11 @@ router.get("/dashboard", authenticateToken, getDashboardStats); // add authentic
 router.get("/requests", authenticateToken, getDueService); // to fetch all the service requests  (authenticateToken)
 router.put("/requests/:id", authenticateToken, updateServiceStatus); // update service request details by id
 router.get("/history", authenticateToken, getServiceHistory); // to fetch all the past service history
+
+// Service Management Routes
+router.get("/services", authenticateToken, getServices); // get all services for the branch
+router.post("/services", authenticateToken, addService); // add new service to the branch
+router.put("/services/:serviceType", authenticateToken, updateService); // update existing service
+router.delete("/services/:serviceType", authenticateToken, deleteService); // disable service
 
 export default router;
