@@ -19,7 +19,7 @@ export const login = async (req, res) => {
   try {
     // Check if user exists
     const [rows] = await db.query(
-      "SELECT * FROM staff_user WHERE username = ? AND official_role = 'serviceoffice-user' ",
+      "SELECT * FROM staff_user WHERE username = ? AND official_role = 'Service' ",
       [username]
     );
 
@@ -46,7 +46,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {
         username: user.username,
-        role: "serviceoffice-user",
+        role: user.official_role, // Use actual role from database
         branch_id: user.branch_id,
       },
       //process.env.JWT_SECRET || 'your-secret-key',
@@ -63,7 +63,7 @@ export const login = async (req, res) => {
       token: token,
       user: {
         username: user.username, // Make sure this is the correct field name
-        role: "serviceoffice-user",
+        role: user.official_role, // Use actual role from database
         branch_id: user.branch_id,
       },
     });
