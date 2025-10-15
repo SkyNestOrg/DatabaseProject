@@ -82,7 +82,7 @@ import CheckOut from "./routes/FrontDesk/CheckOut.js";
 app.use("/frontdesk/checkout", CheckOut);
 
 // Payments
-import PaymentAndBill from "./routes/FrontDesk/Payment_and_Bill.js"; // includes makePayment, cancelPayment, view bills
+import PaymentAndBill from "./routes/FrontDesk/Payement_and_Bill.js"; // includes makePayment, cancelPayment, view bills
 app.use("/frontdesk/payments", PaymentAndBill);
 
 // import FrontDeskClasses from "./routes/FrontDesk/FrontDeskClasses.js";
