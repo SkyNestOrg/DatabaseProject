@@ -68,7 +68,7 @@ router.post("/:bookingID", authenticateToken, async (req, res) => {
     await connection.beginTransaction();
 
     // Use branchId from authenticated user
-    //const branchId = req.user.branch_id;
+    const branchId = req.user.branch_id;
 
     // Use bookingDate as checkinDate
     const effectiveCheckinDate = bookingDate;
@@ -90,9 +90,9 @@ router.post("/:bookingID", authenticateToken, async (req, res) => {
 
     // 3️⃣ Insert into Booking table
     const [bookingResult] = await connection.query(
-      `INSERT INTO Booking (guest_id, booking_date, status, number_of_rooms)
-       VALUES (?, ?, ?, 'booked', ?)`,
-      [guestId, branchId, bookingDate, effectiveCheckinDate, checkoutDate, numberOfRooms]
+      `INSERT INTO Booking (guest_id, branch_id, booking_date, status, number_of_rooms,number_of_pax)
+       VALUES (?, ?, ?, 'booked', ?,1)`,
+      [guestId, branchId, effectiveCheckinDate, numberOfRooms]
     );
 
     const bookingId = bookingResult.insertId;

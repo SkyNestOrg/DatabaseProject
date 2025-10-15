@@ -22,8 +22,8 @@ async function handleLogin(user, userType, res, password) {
 
     const payload = {
       username: user.username,
-      role: user.official_role || 'guest', // Default to 'guest' if not staff
-      branch_id: user.branch_name || null,
+      role: user.official_role || "guest", // Default to 'guest' if not staff
+      branch_id: userType === "staff" ? user.branch_id : null, // Use branch_id for staff, null for guests
       guest_id: user.guest_id || null,
     };
 
@@ -44,7 +44,7 @@ async function handleLogin(user, userType, res, password) {
       user: {
         username: user.username,
         role: user.official_role || 'guest',
-        branch: user.branch_name || null,
+        branch: user.branch_id || null,
         name: user.first_name ? `${user.first_name} ${user.last_name}` : user.username,
       },
       redirectUrl,

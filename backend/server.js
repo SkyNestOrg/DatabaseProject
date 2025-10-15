@@ -65,7 +65,7 @@ app.use("/serviceofficetokenauth", ServiceOfficeTokenAuth );
 // app.use("/frontofficetokenauth", FrontOfficeTokenAuth );
 
 import FrontOfficeLogin from "./routes/FrontDesk/FrontOfficeLogin.js";
-app.use("/frontofficelogin", FrontOfficeLogin);
+app.use("/frontdesklogin", FrontOfficeLogin);
 
 import FrontOfficeTokenAuth from "./routes/FrontDesk/FrontOfficeTokenAuth.js";
 app.use("/frontofficetokenauth", FrontOfficeTokenAuth);
@@ -82,8 +82,8 @@ import CheckOut from "./routes/FrontDesk/CheckOut.js";
 app.use("/frontdesk/checkout", CheckOut);
 
 // Payments
-// import PaymentAndBill from "./routes/FrontDesk/Payment_and_Bill.js"; // includes makePayment, cancelPayment, view bills
-// app.use("/frontdesk/payments", PaymentAndBill);
+import PaymentAndBill from "./routes/FrontDesk/Payment_and_Bill.js"; // includes makePayment, cancelPayment, view bills
+app.use("/frontdesk/payments", PaymentAndBill);
 
 // import FrontDeskClasses from "./routes/FrontDesk/FrontDeskClasses.js";
 // app.use("/frontdesk/classes", FrontDeskClasses);
