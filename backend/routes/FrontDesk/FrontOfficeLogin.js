@@ -1,89 +1,100 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'; // For generating authentication tokens
+import jwt from 'jsonwebtoken';
 import db from '../../db.js';
 
 const router = express.Router();
-router.use(express.json());
+const secretKey = process.env.JWT_SECRET || 'mysecretkey'; // Consistent naming
 
-// POST /login
+// Helper function for login logic
+async function handleLogin(user, userType, res, password) {
+  try {
+    // Compare the provided password with the hashed password
+    // const isMatch = await bcrypt.compare(password, user.password);
+
+    // if (!isMatch) {
+    //   return res.status(401).json({ error: 'Incorrect password' });
+    // }
+
+    if (password !== user.password) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
+
+    const payload = {
+      username: user.username,
+      role: user.official_role || 'guest', // Default to 'guest' if not staff
+      branch_id: user.branch_name || null,
+      guest_id: user.guest_id || null,
+    };
+
+    const token = jwt.sign(payload, secretKey, { expiresIn: '24h' });
+
+    let redirectUrl = '/';
+    if (userType === 'guest') redirectUrl = '/guest-dashboard';
+    else if (userType === 'staff') {
+      if (user.official_role === 'receptionist') redirectUrl = '/reception-dashboard';
+      else if (user.official_role === 'admin') redirectUrl = '/admin-dashboard';
+      else redirectUrl = '/staff-dashboard';
+    }
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        username: user.username,
+        role: user.official_role || 'guest',
+        branch: user.branch_name || null,
+        name: user.first_name ? `${user.first_name} ${user.last_name}` : user.username,
+      },
+      redirectUrl,
+    });
+  } catch (err) {
+    console.error('Password comparison error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 router.post('/', async (req, res) => {
-    console.log('POST /frontofficelogin received:', req.body);
-    
+  try {
     const { username, password } = req.body;
-
-    // Validate input
     if (!username || !password) {
-        return res.status(400).json({ 
-            status: 'Username and password are required', 
-            success: false 
-        });
+      return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    try {
-        // Check if user exists
-        const [rows] = await db.query(
-            "SELECT * FROM staff_user WHERE username = ? AND official_role = 'frontoffice-user' ",
-            [username]
-        );
-        
-        if (rows.length === 0) {
-            return res.status(401).json({ 
-                status: 'Invalid credentials', 
-                success: false 
-            });
-        }
+    // Check Guest
+    const [guestRows] = await db.query(
+      `SELECT gu.username, gu.password, g.guest_id, g.first_name, g.last_name, 
+              g.email, g.phone_number, 'guest' AS official_role
+       FROM Guest_User gu
+       JOIN Guest g ON gu.guest_id = g.guest_id
+       WHERE gu.username = ?`,
+      [username]
+    );
 
-        const user = rows[0];
-
-        // Compare password with hashed password in database
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        
-        if (!isPasswordValid) {
-            return res.status(401).json({ 
-                status: 'Invalid credentials', 
-                success: false 
-            });
-        }
-        const secretkey = process.env.JWT_SECRET;
-        // Generate JWT token
-        const token = jwt.sign(
-            { 
-                username: user.username , 
-                role: 'frontoffice-staff',
-                branch_id: user.branch_id
-            }, 
-            //process.env.JWT_SECRET || 'your-secret-key',
-            secretkey, // SAME KEY IN BOTH FILES
-            
-            { expiresIn: '1h' }
-        );
-
-      
-        console.log('Login successful for user:', username);
-    
-        
-
-        res.status(200).json({
-            status: 'Login successful',
-            success: true,
-            token: token,
-            user: {
-                
-                username: user.username ,// Make sure this is the correct field name
-                role: 'frontoffice-staff',
-                branch_id: user.branch_id
-            }
-        });
-
-    } catch (err) {
-        console.error('Database error:', err);
-        res.status(500).json({ 
-            status: 'Server error during login', 
-            success: false, 
-            error: err.message 
-        });
+    if (guestRows.length > 0) {
+      return handleLogin(guestRows[0], 'guest', res, password);
     }
+
+    // Check Staff
+    const [staffRows] = await db.query(
+      `SELECT su.username, su.password, su.official_role, su.branch_id,
+              b.branch_name, b.city
+       FROM Staff_User su
+       JOIN Branch b ON su.branch_id = b.branch_id
+       WHERE su.username = ?`,
+      [username]
+    );
+
+    if (staffRows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    return handleLogin(staffRows[0], 'staff', res, password);
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 export default router;

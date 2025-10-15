@@ -1,5 +1,5 @@
 //  Guest
-export class Guest {
+class Guest {
   constructor({ guest_id, first_name, last_name, email, phone_number, address, passport_number, country_of_residence }) {
     this.guestId = guest_id;
     this.firstName = first_name;
@@ -13,7 +13,7 @@ export class Guest {
 }
 
 //  Branch
-export class Branch {
+class Branch {
   constructor({ branch_id, branch_name, branch_address, branch_city, branch_contact }) {
     this.branchId = branch_id;
     this.name = branch_name;
@@ -24,7 +24,7 @@ export class Branch {
 }
 
 //  Booking
-export class Booking {
+class Booking {
   constructor({ booking_id, booking_date }) {
     this.booking_id = booking_id;
     this.booking_date = booking_date;
@@ -32,7 +32,7 @@ export class Booking {
 }
 
 //  Room
-export class Room {
+class Room {
   constructor({ room_number, room_type, base_price, check_in, check_out, nights, discount_percentage, base_charge, final_room_charge }) {
     this.room_number = room_number;
     this.room_type = room_type;
@@ -47,7 +47,7 @@ export class Room {
 }
 
 //  Payment
-export class Payment {
+class Payment {
   constructor({ payment_reference, payment_method, paid_amount, payment_date, room_total, service_total, sub_total, tax_amount, grand_total, due_amount }) {
     this.payment_reference = payment_reference;
     this.payment_method = payment_method;
@@ -63,7 +63,7 @@ export class Payment {
 }
 
 //  Service
-export class Service {
+class Service {
   constructor({ service_request_id, request_type, quantity, unit_quantity_charges, service_status, total_service_charge, date_time }) {
     this.service_request_id = service_request_id;
     this.request_type = request_type;
@@ -74,6 +74,8 @@ export class Service {
     this.date_time = date_time;
   }
 }
+
+export { Guest, Branch, Booking, Room, Service, Payment };
 
 //  Export all together
 //module.exports = { Guest, Branch, Booking, Room, Service, Payment };

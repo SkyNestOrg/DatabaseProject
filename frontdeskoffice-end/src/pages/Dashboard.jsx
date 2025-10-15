@@ -1,189 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import checkAuth from '../checkAuth';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize navigate function
-  
+  const [bookings, setBookings] = useState([]);
+  const [formData, setFormData] = useState({ guestId: '', roomNumber: '', checkinDate: '', checkoutDate: '', bill: '' });
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Check if user is logged in
-    const userData = localStorage.getItem('user');
-    const authToken = localStorage.getItem('token');
-    
-    if (userData && authToken) {
-      setUser(JSON.parse(userData));
-    } else {
-      // Redirect to login if not authenticated
-      window.location.href = '/frontofficelogin';
+    const init = async () => {
+      const data = await checkAuth();
+      if (!data.success) return navigate('/frontofficelogin');
+      setUser(JSON.parse(localStorage.getItem('user')));
+      
+      try {
+        const res = await axios.get('/frontdesk/bookings/bookings', {
+          headers: { 'x-access-token': localStorage.getItem('token') }
+        });
+        setBookings(res.data.bookings || []);
+      } catch (err) {
+        console.log('No bookings endpoint yet');
+      }
+    };
+    init();
+  }, [navigate]);
+
+  const handleCreateBooking = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/frontdesk/bookings/booking', formData, {
+        headers: { 'x-access-token': localStorage.getItem('token') }
+      });
+      setMessage('Booking created!');
+      setFormData({ guestId: '', roomNumber: '', checkinDate: '', checkoutDate: '', bill: '' });
+    } catch (err) {
+      setMessage('Error creating booking');
     }
-    setLoading(false);
-  }, []);
+  };
 
   const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    // Redirect to login
-    window.location.href = '/frontofficelogin';
+    localStorage.clear();
+    navigate('/frontofficelogin');
   };
-
-  const handleMenuItemClick = (item) => {
-    if (item === "FrontOffice Profile") {
-      // Navigate to guest profile page with guest_id parameter
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        window.location.href = `/frontoffice-profile?username=${user.username}`;
-      }
-    }else if (item === "Check In/Out") {
-      navigate('/Check'); // Add other menu item handlers here as needed
-    }else if (item === "Payment") {
-      navigate('/payment'); // Add other menu item handlers here as needed
-    }else if (item === "Search Guest Details") {
-      navigate('/searchguestdetails'); // Add other menu item handlers here as needed
-    }
-  ;}
-
-  const styles = {
-    dashboard: {
-      display: 'grid',
-      gridTemplateAreas: `
-        "header header"
-        "sidebar content"
-      `,
-      gridTemplateColumns: '220px 1fr',
-      gridTemplateRows: '70px 1fr',
-      height: '100vh',
-      fontFamily: 'Segoe UI, sans-serif',
-    },
-    header: {
-      gridArea: 'header',
-      backgroundColor: '#2c3e50',
-      color: 'white',
-      padding: '1rem 2rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      fontSize: '1.4rem',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-    },
-    userInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '1rem',
-      fontSize: '1rem',
-    },
-    logoutButton: {
-      background: 'transparent',
-      border: '1px solid white',
-      color: 'white',
-      padding: '0.5rem 1rem',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '0.9rem',
-    },
-    sidebar: {
-      gridArea: 'sidebar',
-      backgroundColor: '#34495e',
-      color: 'white',
-      padding: '2rem 1rem',
-      borderTopRightRadius: '12px',
-      boxShadow: '2px 0 6px rgba(0,0,0,0.2)',
-    },
-    sidebarList: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0,
-    },
-    sidebarItem: {
-      margin: '1rem 0',
-      cursor: 'pointer',
-      padding: '0.6rem 1rem',
-      borderRadius: '8px',
-      transition: 'background 0.3s',
-    },
-    content: {
-      gridArea: 'content',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #f6f9fc, #dbe9f4)',
-      borderTopLeftRadius: '12px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '1.5rem',
-      color: '#2c3e50',
-      fontWeight: 'bold',
-    },
-    loading: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      fontSize: '1.2rem',
-    },
-  };
-
-  const menuItems = [
-    "Check In/Out",
-    "Payment",
-    "Search Guest Details"
-  ];
-
-  if (loading) {
-    return <div style={styles.loading}>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div style={styles.loading}>Redirecting to login...</div>;
-  }
 
   return (
     <div style={styles.dashboard}>
       <header style={styles.header}>
-        <div> FrontOffice Dashboard</div>
-        <div style={styles.userInfo}>
-          <span>Welcome, {user.username}!</span>
-          <button 
-            style={styles.logoutButton} 
-            onClick={handleLogout}
-            onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-          >
-            Logout
-          </button>
-        </div>
+        <h1>Front Desk Dashboard</h1>
+        <button onClick={handleLogout}>Logout</button>
       </header>
 
       <nav style={styles.sidebar}>
-        <ul style={styles.sidebarList}>
-          {menuItems.map((item, index) => (
-            <li
-              key={index}
-              style={styles.sidebarItem}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = '#1abc9c')
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = 'transparent')
-              }
-              onClick={() => handleMenuItemClick(item)}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
+        <button onClick={() => navigate('/check')}>Check In/Out</button>
+        <button onClick={() => navigate('/payment')}>Payment</button>
+        <button onClick={() => navigate('/searchguestdetails')}>Search Guest</button>
       </nav>
 
-      <main style={styles.content}>
-        <div>Welcome to SkyNest HRGSMS FrontDesk Portal</div>
-        <div style={{ fontSize: '1rem', marginTop: '1rem', fontWeight: 'normal' }}>
-        FrontDesk User: {user.username}
-        </div>
+      <main style={styles.main}>
+        <h2>Welcome, {user?.username}!</h2>
+        
+        <form onSubmit={handleCreateBooking} style={styles.form}>
+          <h3>Create Booking</h3>
+          <input placeholder="Guest ID" value={formData.guestId} onChange={(e) => setFormData({...formData, guestId: e.target.value})} />
+          <input placeholder="Room #" value={formData.roomNumber} onChange={(e) => setFormData({...formData, roomNumber: e.target.value})} />
+          <input type="date" value={formData.checkinDate} onChange={(e) => setFormData({...formData, checkinDate: e.target.value})} />
+          <input type="date" value={formData.checkoutDate} onChange={(e) => setFormData({...formData, checkoutDate: e.target.value})} />
+          <input type="number" placeholder="Bill $" value={formData.bill} onChange={(e) => setFormData({...formData, bill: e.target.value})} />
+          <button type="submit">Create Booking</button>
+        </form>
+
+        {message && <p>{message}</p>}
+        
+        {bookings.length > 0 && (
+          <table style={styles.table}>
+            <thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Status</th></tr></thead>
+            <tbody>{bookings.map(b => (
+              <tr key={b.booking_id}><td>{b.booking_id}</td><td>{b.guestId}</td><td>{b.roomNumber}</td><td>{b.status}</td></tr>
+            ))}</tbody>
+          </table>
+        )}
       </main>
     </div>
   );
 }
+
+const styles = {
+  dashboard: { display: 'grid', gridTemplateColumns: '200px 1fr', height: '100vh' },
+  header: { background: '#2c3e50', color: 'white', padding: '20px', display: 'flex', justifyContent: 'space-between' },
+  sidebar: { background: '#34495e', padding: '20px' }, 
+  main: { padding: '20px', overflowY: 'auto' },
+  form: { display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '400px', margin: '20px 0' },
+  input: { padding: '8px', borderRadius: '4px', border: '1px solid #ccc' },
+  button: { padding: '8px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px' },
+  table: { width: '100%', borderCollapse: 'collapse', marginTop: '20px' },
+};
 
 export default Dashboard;
