@@ -1,32 +1,41 @@
-Setting up Admin End
-____________________________________________
-Step 1: Backend Setup
+## Setting up Admin End
 
-Create .env file in backend directory:
+### Step 1: Backend Setup
 
-_**DB_HOST=localhost \n
-DB_USER=username \n
-DB_PASSWORD=your_db_password \n
-DB_NAME=your_db_name \n
-PORT=5000 \n
-JWT_SECRET=your_jwt_secret**_
+1.  **Create `.env` file** in the **`backend`** directory with the following content:
 
-On admin-end directory, Run:
+    ```env
+    DB_HOST=localhost
+    DB_USER=username
+    DB_PASSWORD=your_db_password
+    DB_NAME=your_db_name
+    PORT=5000
+    JWT_SECRET=your_jwt_secret
+    ```
 
-_**cd backend \n
-npm install \n
-npm start**_
+2.  **Install and Start** the backend server. From the **`admin-end`** root directory, run:
 
-You should see:
+    ```bash
+    cd backend
+    npm install
+    npm start
+    ```
 
-_**🚀 Server running on port 5000 \n
-📍 Health check: http://localhost:5000/api/health**_
+    You should see output similar to:
 
-____________________________________________
-Step 2: Frontend Setup (in a new terminal)
+    ```
+    🚀 Server running on port 5000 
+    📍 Health check: http://localhost:5000/api/health
+    ```
+---
+### Step 2: Frontend Setup (in a new terminal)
 
-On admin-end directory, Run:
+1.  **Open a new terminal window**.
+2.  **Install and Run** the frontend. From the **`admin-end`** root directory, run:
 
-_**cd frontend \n
-npm install \n
-npm run dev**_
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+    The frontend should now be running port 3000.
