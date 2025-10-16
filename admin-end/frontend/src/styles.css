@@ -234,6 +234,16 @@ input:focus, select:focus {
   border-left: 4px solid #48bb78;
 }
 
+/* error message */
+.error-message {
+  background-color: #fed7d7;
+  color: #c53030;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border-left: 4px solid #e53e3e;
+}
+
 /* recently registered list */
 .staff-table {
   width: 100%;
@@ -244,6 +254,29 @@ input:focus, select:focus {
   padding: 10px;
   border-bottom: 1px solid #eee;
   text-align: left;
+}
+
+.staff-table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #2a5a9a;
+}
+
+/* login container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a4b8c, #2a5a9a);
+}
+
+/* table container */
+.table-container {
+  max-height: 600px;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 6px;
 }
 
 /* responsive */
