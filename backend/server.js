@@ -71,6 +71,17 @@ import ManagementLogin from "./routes/Management/ManagamentLogin.js";
 app.use("/managementlogin", ManagementLogin);
 import ManagementTokenAuth from "./routes/Management/ManagementTokenAuth.js";
 app.use("/managementtokenauth", ManagementTokenAuth );
+import Report1 from "./routes/Management/Report1.js";
+app.use("/report1", Report1);
+import Report2 from "./routes/Management/Report2.js";
+app.use("/report2", Report2);
+import Report3 from "./routes/Management/Report3.js";
+app.use("/report3", Report3);
+import Report4 from "./routes/Management/Report4.js";
+app.use("/report4", Report4);
+import Report5 from "./routes/Management/Report5.js";
+app.use("/report5", Report5);
+  
 
 
 

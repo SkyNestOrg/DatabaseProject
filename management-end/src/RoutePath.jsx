@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Report1 from "./pages/Report1";
-import Report2 from "./pages/Report2";
-import Report3 from "./pages/Report3";
-import Report4 from "./pages/Report4";
-import Report5 from "./pages/Report5";
+import Report1 from "./pages/Report1.jsx";
+import Report2 from "./pages/Report2.jsx";
+import Report3 from "./pages/Report3.jsx";
+import Report4 from "./pages/Report4.jsx";
+import Report5 from "./pages/Report5.jsx";
 
 export default function AppRoutes() {
 
