@@ -15,3 +15,7 @@ CREATE INDEX idx_bill_booking ON bill(booking_id);
 CREATE INDEX idx_roomtype_name ON roomtype(type_name);
 CREATE INDEX idx_discount_branch_type_dates ON discount(branch_id, room_type, start_date, end_date);
 CREATE INDEX idx_service_branch_type ON service(service_type, branch_id, availability);
+
+-- to filter out the service history quickly
+CREATE INDEX idx_service_request_branch_status ON service_request (branch_id, status);
+CREATE INDEX idx_service_request_branch_date ON service_request (branch_id, date_time);

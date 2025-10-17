@@ -131,7 +131,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE TRIGGER update_bill_service_total 
+CREATE TRIGGER update_bill_after_service_completed 
 AFTER UPDATE ON service_request
 FOR EACH ROW
 BEGIN
