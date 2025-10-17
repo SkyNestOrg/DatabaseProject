@@ -57,7 +57,8 @@ CREATE TABLE Guest_User (
 CREATE TABLE RoomType (
   type_name VARCHAR(20),
   base_price NUMERIC(9,2) NOT NULL, 
-  amenities TEXT, 
+  amenities TEXT,
+  capacity TINYINT DEFAULT 1,
   PRIMARY KEY (type_name)
 );
 
@@ -137,7 +138,7 @@ CREATE TABLE Payment (
 
 
 CREATE TABLE Service (
-  service_type VARCHAR(20),
+  service_type VARCHAR(50),
   unit_quantity_charges NUMERIC(7,2) NOT NULL,
   branch_id TINYINT NOT NULL,
   availability VARCHAR(10) DEFAULT 'Available',
@@ -148,7 +149,7 @@ CREATE TABLE Service (
 
 CREATE TABLE Service_Request (
   service_request_id SMALLINT AUTO_INCREMENT,
-  request_type VARCHAR(20) NOT NULL,
+  request_type VARCHAR(50) NOT NULL,
   date_time DATETIME DEFAULT CURRENT_TIMESTAMP,
   booking_id SMALLINT NOT NULL,
   room_number SMALLINT NOT NULL,
