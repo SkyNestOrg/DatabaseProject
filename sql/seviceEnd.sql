@@ -750,6 +750,9 @@ SET service_total = current_service_total + service_increase,
 WHERE booking_id = NEW.booking_id;
 END IF;
 END // DELIMITER;
+
+--@block
+SHOW INDEX FROM service_request;
 --@block
 SELECT *
 FROM staff_user;
@@ -1632,7 +1635,7 @@ END;
 --@block
 UPDATE service_request
 SET status = 'Pending'
-WHERE service_request_id IN (1, 2, 3);
+WHERE service_request_id=6;
 
 --@block
 SELECT *
@@ -1644,6 +1647,13 @@ SELECT * FROM bill;
 
 --@block
 SELECT * FROM service;
+
+--@block
+SELECT * FROM service_request;
+
+--@block
+SELECT * FROM service
+WHERE branch_id = 1;
 
 --@block
 SELECT * FROM service_request;

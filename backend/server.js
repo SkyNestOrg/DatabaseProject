@@ -46,13 +46,40 @@ app.use("/tokenauth", TokenAuth);
 // app.use("/bill", GuestViewBill);
 
 //service office routes
+import serviceOfficeRoutes from "./routes/ServiceOffice/serviceOfficeRoutes.js";
+app.use("/service", serviceOfficeRoutes); // all routes in serviceOfficeRoutes will be prefixed with /service
 // import ServiceLogin from "./routes/ServiceOffice/ServiceLogin.js";
 // app.use("/serviceofficelogin", ServiceLogin);
-// import ServiceOfficeTokenAuth from "./routes/ServiceOffice/ServiceOfficeTokenAuth.js";
-// app.use("/serviceofficetokenauth", ServiceOfficeTokenAuth );
-import serviceOfficeRoutes from "./routes/ServiceOffice/serviceOfficeRoutes.js";
-// import serviceAuthRoutes from "./routes/serviceAuthRoutes.js";
-app.use("/service", serviceOfficeRoutes); // all routes in serviceOfficeRoutes will be prefixed with /service
+// import ServiceOfficeTokenAuth from "./rou// import FrontOfficeLogin from "./routes/FrontDesk/FrontOfficeLogin.js";
+// app.use("/frontofficelogin", FrontOfficeLogin);
+// import FrontOfficeTokenAuth from "./routes/FrontDesk/FrontOfficeTokenAuth.js";
+// app.use("/frontofficetokenauth", FrontOfficeTokenAuth );
+
+// import FrontOfficeLogin from "./routes/FrontDesk/FrontOfficeLogin.js";
+// app.use("/frontdesklogin", FrontOfficeLogin);
+
+// import FrontOfficeTokenAuth from "./routes/FrontDesk/FrontOfficeTokenAuth.js";
+// app.use("/frontofficetokenauth", FrontOfficeTokenAuth);
+
+// // Booking Management (Front Desk)
+// import FrontDeskBooking from "./routes/FrontDesk/BookingHandle.js"; // includes create/cancel bookings
+// app.use("/frontdesk/bookings", FrontDeskBooking);
+
+// // Check-in and Check-out
+// import CheckIn from "./routes/FrontDesk/CheckIn.js";
+// app.use("/frontdesk/checkin", CheckIn);
+
+// import CheckOut from "./routes/FrontDesk/CheckOut.js";
+// app.use("/frontdesk/checkout", CheckOut);
+
+// // Payments
+// import PaymentAndBill from "./routes/FrontDesk/Payment_and_Bill.js"; // includes makePayment, cancelPayment, view bills
+// app.use("/frontdesk/payments", PaymentAndBill);
+
+// import FrontDeskClasses from "./routes/FrontDesk/FrontDeskClasses.js";
+// app.use("/frontdesk/classes", FrontDeskClasses);
+
+
 
 
 //front desk office routes

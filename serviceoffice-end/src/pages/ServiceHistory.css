@@ -230,6 +230,12 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .filters-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .service-history-container {
         padding: 1rem;
@@ -240,21 +246,109 @@
         gap: 1rem;
         text-align: center;
     }
+
+    .service-history-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .back-button {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+    }
     
     .filters-grid {
         grid-template-columns: 1fr;
     }
+
+    .filters-section {
+        padding: 1.25rem;
+    }
+
+    .clear-filters-btn {
+        width: 100%;
+    }
     
     .history-table-container {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .history-table {
-        min-width: 800px;
+        min-width: 700px;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
     }
     
     .pagination {
         flex-wrap: wrap;
+        padding: 0.75rem;
+    }
+
+    .pagination-btn {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+        min-width: 38px;
+    }
+
+    .results-info {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .service-history-container {
+        padding: 0.75rem;
+    }
+
+    .service-history-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .filters-section {
+        padding: 1rem;
+    }
+
+    .filter-group label {
+        font-size: 0.9rem;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .history-table {
+        min-width: 600px;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.85rem;
+    }
+
+    .service-status {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .pagination-btn {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+        min-width: 34px;
+    }
+
+    .cost-display {
+        font-size: 0.9rem;
     }
 }
 

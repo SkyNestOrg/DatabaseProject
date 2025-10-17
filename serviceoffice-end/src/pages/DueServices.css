@@ -186,14 +186,26 @@
 .notification {
     position: fixed;
     right: 1rem;
-    top: 1rem;
+    top: 5rem; /* Moved below navbar to avoid overlap */
     padding: 0.75rem 1rem;
     border-radius: 8px;
-    box-shadow: var(--shadow);
-    z-index: 70;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999; /* Higher z-index to stay above everything including navbar */
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 .notification.success { background: rgba(40,167,69,0.12); color: #155724; border: 1px solid rgba(40,167,69,0.18); }
 .notification.error { background: rgba(220,53,69,0.08); color: #721c24; border: 1px solid rgba(220,53,69,0.12); }
@@ -210,12 +222,80 @@
         gap: 1rem;
         text-align: center;
     }
+
+    .due-services-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .back-button {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+    }
     
     .services-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .service-card {
+        padding: 1.25rem;
+    }
+
+    .service-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .service-info p {
+        font-size: 0.9rem;
     }
     
     .service-actions {
         flex-direction: column;
+    }
+
+    .complete-button {
+        padding: 0.65rem;
+        font-size: 0.95rem;
+    }
+
+    .notification {
+        right: 0.5rem;
+        left: 0.5rem;
+        top: 4rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .due-services-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .service-card {
+        padding: 1rem;
+    }
+
+    .service-card h3 {
+        font-size: 1rem;
+    }
+
+    .service-info p {
+        font-size: 0.85rem;
+    }
+
+    .service-status {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .complete-button {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .confirm-modal {
+        width: 95%;
+        padding: 1rem;
     }
 }

@@ -9,8 +9,8 @@ export const SERVICE_STATUS = {
 
 export const USER_ROLES = {
   MANAGER: "Manager",
-  RECEPTIONIST: "Receptionist",
-  CLEANER: "Cleaner",
+  FRONTDESKOFFICER: "Front Desk Officer",
+  SERVICEOFFICE: "serviceoffice-user",
   // Add more roles as needed
 };
 

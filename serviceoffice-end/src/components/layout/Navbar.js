@@ -7,6 +7,7 @@ function Navbar() {
   const { logout, isAuthenticated, user } = useContext(AuthContext);
   const location = useLocation();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // hide navbar on login page
   if (location.pathname === "/login") return null;
@@ -18,6 +19,10 @@ function Navbar() {
   };
   const cancelLogout = () => setConfirmOpen(false);
 
+  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+  
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   return (
     <>
       <nav className="navbar">
@@ -26,18 +31,22 @@ function Navbar() {
             <h1>🏨 Service Office</h1>
           </div>
 
-          <ul className="nav-links">
+          <button className="menu-toggle" onClick={toggleMobileMenu} aria-label="Toggle menu">
+            {mobileMenuOpen ? "✕" : "☰"}
+          </button>
+
+          <ul className={`nav-links ${mobileMenuOpen ? "active" : ""}`}>
             <li>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard" onClick={closeMobileMenu}>Dashboard</Link>
             </li>
             <li>
-              <Link to="/due-services">Due Services</Link>
+              <Link to="/due-services" onClick={closeMobileMenu}>Due Services</Link>
             </li>
             <li>
-              <Link to="/service-history">Service History</Link>
+              <Link to="/service-history" onClick={closeMobileMenu}>Service History</Link>
             </li>
             <li>
-              <Link to="/service-management">Manage Services</Link>
+              <Link to="/service-management" onClick={closeMobileMenu}>Manage Services</Link>
             </li>
             {isAuthenticated && (
               <>
@@ -45,7 +54,7 @@ function Navbar() {
                   {user?.branch_id ? `Branch: ${user.branch_id}` : ""}
                 </li>
                 <li>
-                  <button className="btn-logout" onClick={onLogoutClick}>
+                  <button className="btn-logout" onClick={() => { onLogoutClick(); closeMobileMenu(); }}>
                     Logout
                   </button>
                 </li>

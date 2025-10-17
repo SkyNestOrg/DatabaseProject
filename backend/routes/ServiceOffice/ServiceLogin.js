@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // For generating authentication tokens
 import db from "../../db.js";
+import { USER_ROLES } from "./serviceOfficeConstants/constants.js";
 
 // POST /login
 export const login = async (req, res) => {
@@ -19,8 +20,8 @@ export const login = async (req, res) => {
   try {
     // Check if user exists
     const [rows] = await db.query(
-      "SELECT * FROM staff_user WHERE username = ? AND official_role = 'Service' ",
-      [username]
+      "SELECT * FROM staff_user WHERE username = ? AND official_role = ?",
+      [username, USER_ROLES.SERVICEOFFICE]
     );
 
     if (rows.length === 0) {
