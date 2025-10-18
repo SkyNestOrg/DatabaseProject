@@ -34,7 +34,7 @@ function Dashboard() {
       const userData = localStorage.getItem('user');
       if (userData) {
         const user = JSON.parse(userData);
-        window.location.href = `/guest-profile?guest_id=${user.id}`;
+        window.location.href = `/guest/profile?guest_id=${user.id}`;
       }
     } else if (item === "Our Branches") {
       navigate('/guest/branches');
