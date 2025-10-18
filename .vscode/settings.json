@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "sqltools.connections": [
         {
             "mysqlOptions": {
@@ -30,3 +31,24 @@
         }
     ]
 }
+=======
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "localhost",
+      "database": "skynestpamoth",
+      "username": "root",
+      "password": "Callofduty4&"
+    }
+  ],
+  "git.ignoreLimitWarning": true
+}
+>>>>>>> origin/main

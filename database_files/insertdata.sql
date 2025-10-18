@@ -128,3 +128,35 @@ INSERT INTO `Room` (`room_number`, `current_status`, `room_type`, `branch_id`) V
 INSERT INTO taxes_and_charges(revision_id, revision_date, latest_tax_percentage, latest_surcharge_percentage) VALUES
 (1, '2025-10-06', 15, 5),
 (2, '2025-10-01', 25, 5);
+(2, '2025-10-01', 25, 5);
+
+-- Explicit sample guests, bookings and booked rooms used by the October 2025 service requests
+INSERT INTO `Guest` (first_name, last_name, email, phone_number, address, passport_number, country_of_residence, date_of_birth) VALUES
+('Alice', 'Perera', 'alice.perera@example.com', '0771111111', '12 Ocean Road', 'P123450', 'Sri Lanka', '1990-01-01'),
+('Bob', 'Silva', 'bob.silva@example.com', '0772222222', '34 Hill Street', 'P223450', 'Sri Lanka', '1985-05-05'),
+('Carol', 'Fernando', 'carol.fernando@example.com', '0773333333', '56 Lake Avenue', 'P323450', 'Sri Lanka', '1992-07-07');
+
+-- Bookings that overlap October 2025
+INSERT INTO `Booking` (guest_id, booking_date, branch_id, number_of_rooms, number_of_pax, status) VALUES
+(1, '2025-10-03 09:00:00', 1, 1, 2, 'Confirmed'),
+(2, '2025-09-29 12:00:00', 2, 1, 1, 'Confirmed'),
+(3, '2025-10-20 15:00:00', 3, 1, 2, 'Confirmed');
+
+-- Corresponding booked rooms (must reference existing Room rows)
+INSERT INTO `Booked_Room` (room_number, booking_id, branch_id, check_in, check_out, status) VALUES
+(101, 1, 1, '2025-10-03', '2025-10-06', 'Booked'),
+(201, 2, 2, '2025-09-29', '2025-10-02', 'Booked'),
+(301, 3, 3, '2025-10-20', '2025-10-25', 'Booked');
+
+-- Literal Service_Request rows for October 2025
+INSERT INTO `Service_Request` (request_type, date_time, booking_id, room_number, status, quantity, branch_id) VALUES
+('Room Service - regular', '2025-10-04 19:15:00', 1, 101, 'Completed', 1, 1),
+('Laundry - extra', '2025-10-05 09:00:00', 1, 101, 'Completed', 2, 1),
+('wifi - upgrade', '2025-10-01 10:00:00', 2, 201, 'Completed', 1, 2),
+('spa and wellness - regular', '2025-10-22 16:00:00', 3, 301, 'Pending', 1, 3),
+('minibar - premium', '2025-10-23 22:00:00', 3, 301, 'Completed', 1, 3),
+('Room Service - Premium', '2025-10-24 20:30:00', 3, 301, 'Completed', 2, 3),
+('Room Service - regular', '2025-10-05 13:45:00', 1, 101, 'Completed', 1, 1),
+('Laundry - regular', '2025-10-02 08:30:00', 2, 201, 'Completed', 1, 2);
+
+

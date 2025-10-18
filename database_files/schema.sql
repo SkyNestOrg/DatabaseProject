@@ -1,5 +1,6 @@
 -- Database Schema for Hotel Management System - CORRECTED VERSION
 
+
 CREATE TABLE `Branch` (
   `branch_id` INT AUTO_INCREMENT,
   `branch_name` VARCHAR(25) NOT NULL,
