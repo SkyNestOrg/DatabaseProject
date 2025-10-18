@@ -37,12 +37,12 @@ services:
     networks:
       - devnet
 
-  # 💻 MANAGEMENT END
-  management-end:
+  # 💻 FRONTEND
+  frontend:
     build:
-      context: ./management-end
+      context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: dev_management_end
+    container_name: dev_frontend
     ports:
       - "5573:5573"
     environment:

@@ -16,8 +16,6 @@ app.use("/tokenauth", TokenAuth);
 // guest routes (ESM style import instead of require)
 import GuestRegister from "./routes/Guest/GuestRegister.js";
 app.use("/register", GuestRegister);
-import GuestLogin from "./routes/Guest/GuestLogin.js";
-app.use("/login", GuestLogin);
 import GuestTokenAuth from "./routes/Guest/GuestTokenAuth.js";
 app.use("/guesttokenauth", GuestTokenAuth);
 import GuestProfile from "./routes/Guest/GuestProfile.js";
@@ -57,8 +55,15 @@ app.use("/frontofficetokenauth", FrontOfficeTokenAuth);
 import ManagementLogin from "./routes/Management/ManagamentLogin.js";
 app.use("/managementlogin", ManagementLogin);
 import ManagementTokenAuth from "./routes/Management/ManagementTokenAuth.js";
-<<<<<<< HEAD
 app.use("/managementtokenauth", ManagementTokenAuth );
+
+// add guest and staff login
+import StaffLogin from "./routes/StaffLogin.js";
+app.use("/stafflogin", StaffLogin);
+import GuestLogin from "./routes/GuestLogin.js";
+app.use("/guestlogin", GuestLogin);
+
+//report routes
 import Report1 from "./routes/Management/Report1.js";
 app.use("/report1", Report1);
 import Report2 from "./routes/Management/Report2.js";
@@ -70,13 +75,6 @@ app.use("/report4", Report4);
 import Report5 from "./routes/Management/Report5.js";
 app.use("/report5", Report5);
   
-
-
-
-=======
-app.use("/managementtokenauth", ManagementTokenAuth);
->>>>>>> origin/main
-
 //admin routes
 import AdminLogin from "./routes/Admin/AdminLogin.js";
 app.use("/adminlogin", AdminLogin);
