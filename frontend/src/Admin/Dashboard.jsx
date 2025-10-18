@@ -15,7 +15,7 @@ function Dashboard() {
       setUser(JSON.parse(userData));
     } else {
       // Redirect to login if not authenticated
-      window.location.href = '/adminlogin';
+      window.location.href = '/login';
     }
     setLoading(false);
   }, []);
@@ -25,7 +25,7 @@ function Dashboard() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     // Redirect to login
-    window.location.href = '/adminlogin';
+    window.location.href = '/login';
   };
 
   const handleMenuItemClick = (item) => {
@@ -37,17 +37,17 @@ function Dashboard() {
         window.location.href = `/admin-profile?username=${user.username}`;
       }
     }else if (item === "Add Discounts") {
-      navigate('/admindashboard/adddiscounts'); // Add other menu item handlers here as needed
+      navigate('/admin/add-discounts'); // Add other menu item handlers here as needed
     }else if (item === "View Discounts") {
-      navigate('/admindashboard/viewdiscounts'); // Add other menu item handlers here as needed
+      navigate('/admin/discounts'); // Add other menu item handlers here as needed
     }else if (item === "Add Taxes") {
-      navigate('/admindashboard/addtaxes');
+      navigate('/admin/add-taxes');
     }else if (item === "View Taxes") {
-      navigate('/admindashboard/viewtaxes');
+      navigate('/admin/taxes');
     }else if (item === "View Logs") {
-      navigate('/admindashboard/viewlogs');
+      navigate('/admin/logs');
     }else if (item === "Manage Staff") {
-      navigate('/admindashboard/managestaff');
+      navigate('/admin/manage-staff');
 
   ;}
 }

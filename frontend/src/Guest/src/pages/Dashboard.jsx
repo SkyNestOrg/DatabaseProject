@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom'; // Import useNavigate and Outlet
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -29,26 +29,29 @@ function Dashboard() {
   };
 
   const handleMenuItemClick = (item) => {
-    if (item === "Management Profile") {
+    if (item === "Guest Profile") {
       // Navigate to guest profile page with guest_id parameter
       const userData = localStorage.getItem('user');
       if (userData) {
         const user = JSON.parse(userData);
-        window.location.href = `/management-profile?username=${user.username}`;
+        window.location.href = `/guest-profile?guest_id=${user.id}`;
       }
-    } else if (item === "Room Occupancy Report") {
-      navigate('/management/report1');
-    } else if (item === "Guest Billing Summary") {
-      navigate('/management/report2');
-    } else if (item === "Service Usage Summary") {
-      navigate('/management/report3');
-    } else if (item === "Monthly Revenue Report") {
-      navigate('/management/report4');
-    } else if (item === "Top Used Services Summary") {
-      navigate('/management/report5');
-        // Add other menu item handlers here as needed
+    } else if (item === "Our Branches") {
+      navigate('/guest/branches');
+    } else if (item === "Rooms & Services") {
+      navigate('/guest/rooms-services');
+    } else if (item === "Book Your Stay") {
+      navigate('/guest/book'); 
+    } else if (item === "Request Services") {
+      navigate('/guest/service'); 
+    }else if (item === "View Current Bookings") {
+      navigate('/guest/current-bookings'); 
+    }else if (item === "View My Bills") {
+      navigate('/guest/view-bill'); 
+    }
+    // Add other menu item handlers here as needed
   };
-  }
+
   const styles = {
     dashboard: {
       display: 'grid',
@@ -130,12 +133,13 @@ function Dashboard() {
   };
 
   const menuItems = [
-    "Room Occupancy Report",
-    "Guest Billing Summary",
-    "Service Usage Summary",
-    "Monthly Revenue Report",
-    "Top Used Services Summary"
-    
+    "Our Branches",
+    "Rooms & Services",
+    "Guest Profile",
+    "Book Your Stay",
+    "Request Services",
+    "View Current Bookings",
+    "View My Bills"
   ];
 
   if (loading) {
@@ -149,7 +153,7 @@ function Dashboard() {
   return (
     <div style={styles.dashboard}>
       <header style={styles.header}>
-        <div> Management Dashboard</div>
+        <div>🏨 Guest Dashboard</div>
         <div style={styles.userInfo}>
           <span>Welcome, {user.username}!</span>
           <button 
@@ -184,8 +188,10 @@ function Dashboard() {
       </nav>
 
       <main style={styles.content}>
-        {/* Nested route outlet: child pages (reports) will render here */}
-        <Outlet />
+        <div>Welcome to SkyNest HRGSMS System 🌴</div>
+        <div style={{ fontSize: '1rem', marginTop: '1rem', fontWeight: 'normal' }}>
+          Guest ID: {user.id}
+        </div>
       </main>
     </div>
   );

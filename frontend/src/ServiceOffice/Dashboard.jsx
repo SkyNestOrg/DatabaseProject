@@ -15,7 +15,7 @@ function Dashboard() {
       setUser(JSON.parse(userData));
     } else {
       // Redirect to login if not authenticated
-      window.location.href = '/frontofficelogin';
+      window.location.href = '/login';
     }
     setLoading(false);
   }, []);
@@ -25,25 +25,25 @@ function Dashboard() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     // Redirect to login
-    window.location.href = '/frontofficelogin';
+    window.location.href = '/login';
   };
 
   const handleMenuItemClick = (item) => {
-    if (item === "FrontOffice Profile") {
+    if (item === "ServiceOffice Profile") {
       // Navigate to guest profile page with guest_id parameter
       const userData = localStorage.getItem('user');
       if (userData) {
         const user = JSON.parse(userData);
-        window.location.href = `/frontoffice-profile?username=${user.username}`;
+        window.location.href = `/serviceoffice-profile?username=${user.username}`;
       }
-    }else if (item === "Check In/Out") {
-      navigate('/Check'); // Add other menu item handlers here as needed
-    }else if (item === "Payment") {
-      navigate('/payment'); // Add other menu item handlers here as needed
-    }else if (item === "Search Guest Details") {
-      navigate('/searchguestdetails'); // Add other menu item handlers here as needed
+    }else if (item === "View Due Services") {
+    navigate('/service/due');
+    }else if (item === "View Past Services") {
+    navigate('/service/history');
+    }else if (item === "Update Service Table") {
+    navigate('/service/manage');
     }
-  ;}
+  };
 
   const styles = {
     dashboard: {
@@ -126,9 +126,9 @@ function Dashboard() {
   };
 
   const menuItems = [
-    "Check In/Out",
-    "Payment",
-    "Search Guest Details"
+    "View Due Services",
+    "View Past Services",
+    "Update Service Table"
   ];
 
   if (loading) {
@@ -142,7 +142,7 @@ function Dashboard() {
   return (
     <div style={styles.dashboard}>
       <header style={styles.header}>
-        <div> FrontOffice Dashboard</div>
+        <div> ServiceOffice Dashboard</div>
         <div style={styles.userInfo}>
           <span>Welcome, {user.username}!</span>
           <button 
@@ -177,9 +177,9 @@ function Dashboard() {
       </nav>
 
       <main style={styles.content}>
-        <div>Welcome to SkyNest HRGSMS FrontDesk Portal</div>
+        <div>Welcome to SkyNest HRGSMS ServiceOffice Portal</div>
         <div style={{ fontSize: '1rem', marginTop: '1rem', fontWeight: 'normal' }}>
-        FrontDesk User: {user.username}
+        ServiceOffice User: {user.username}
         </div>
       </main>
     </div>

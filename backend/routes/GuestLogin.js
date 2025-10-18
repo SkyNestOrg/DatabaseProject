@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'; // For generating authentication tokens
-import db from '../../db.js';
+import db from '../db.js';
 
 const router = express.Router();
 router.use(express.json());

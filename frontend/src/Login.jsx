@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function Login() {
+  // Mode: 'staff' or 'guest'
+  const [mode, setMode] = useState('staff');
+
   // State for form data
   const [formData, setFormData] = useState({
     username: '',
@@ -58,61 +61,99 @@ function Login() {
   // Determine user role from returned user object
   const getUserRole = (user) => {
     if (!user) return 'management';
-    const roleVal = (user.role || user.user_role || user.role_name || '').toString().toLowerCase();
-    const isAdminFlag = user.isAdmin || user.is_admin || user.is_admin === 1 || roleVal === 'admin' || roleVal === 'administrator';
-    return isAdminFlag ? 'admin' : 'management';
+    // include official_role and other possible fields, normalize
+    const roleVal = (user.role || user.user_role || user.role_name || user.official_role || '').toString().toLowerCase();
+
+    if (!roleVal) return 'management';
+    if (roleVal.includes('admin')) return 'admin';
+    if (roleVal.includes('management') || roleVal.includes('manager') || roleVal.includes('manage')) return 'management';
+    if (roleVal.includes('front')) return 'frontdesk';
+    if (roleVal.includes('service')) return 'serviceoffice';
+
+    // fallback
+    return 'management';
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Validate form
-  if (!validateForm()) {
-    return;
-  }
-
-  setLoading(true);
-  setMessage('');
-  setMessageType('');
-
-  try {
-    const response = await axios.post('http://localhost:5000/stafflogin', {
-      username: formData.username,
-      password: formData.password
-    });
-
-
-    console.log('Login response:', response.data);
-
-    if (response.data.success) {
-      setMessage(response.data.status || 'Login successful!');
-      setMessageType('success');
-      
-      // Store authentication token
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-      }
-      
-      // Store user data
-      if (response.data.user) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      
-      // Redirect based on role
-      setTimeout(() => {
-        const user = response.data.user || {};
-        const role = getUserRole(user);
-        if (role === 'admin') {
-          window.location.href = `/admindashboard`;
-        } else {
-          window.location.href = `/managementdashboard`;
-        }
-      }, 1500);
-    } else {
-      setMessage(response.data.status || 'Login failed');
-      setMessageType('error');
+    // Validate form
+    if (!validateForm()) {
+      return;
     }
-  } catch (error) {
+
+    setLoading(true);
+    setMessage('');
+    setMessageType('');
+
+    const endpoint = mode === 'staff' ? 'http://localhost:5000/stafflogin' : 'http://localhost:5000/guestlogin';
+
+    try {
+      const response = await axios.post(endpoint, {
+        username: formData.username,
+        password: formData.password
+      });
+
+
+      console.log('Login response:', response.data);
+
+      if (response.data.success) {
+        setMessage(response.data.status || 'Login successful!');
+        setMessageType('success');
+        
+        // Store authentication token
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+        }
+        
+        // Store user data
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+
+        // Redirect after brief delay so user sees success message
+        setTimeout(() => {
+          if (mode === 'guest') {
+            // Guest response includes user.id (guest_id)
+            const guest = response.data.user || {};
+            if (guest.id) {
+              window.location.href = `/guest?guest_id=${guest.id}`;
+            } else {
+              window.location.href = '/guest';
+            }
+            return;
+          }
+
+          // Staff flow: use existing role mapping and redirects
+          const user = response.data.user || {};
+          const role = (user.role || user.official_role || getUserRole(user) || '').toString().toLowerCase();
+
+          // Debug logging (stringify to avoid collapsed live object issues)
+          try { console.log('User object (raw):', JSON.stringify(user)); } catch (e) { console.log('User object (raw):', user); }
+          console.log('Detected role:', role);
+
+          switch(role) {
+            case 'admin':
+              window.location.href = `/admin`;
+              break;
+            case 'management':
+              window.location.href = `/management`;
+              break;
+            case 'serviceoffice':
+              window.location.href = `/service`;
+              break;
+            case 'frontdesk':
+              window.location.href = `/frontdesk`;
+              break;
+            default:
+              window.location.href = `/`;
+          }
+        }, 800);
+      } else {
+        setMessage(response.data.status || 'Login failed');
+        setMessageType('error');
+      }
+    } catch (error) {
 
       console.error('Login error:', error);
       
@@ -149,7 +190,21 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-form-wrapper">
-        <h2>Login</h2>
+        {/* Toggle bar */}
+        <div className="toggle-bar">
+          <button
+            className={`toggle-btn ${mode === 'staff' ? 'active' : ''}`}
+            onClick={() => setMode('staff')}
+            disabled={mode === 'staff'}
+          >Staff</button>
+          <button
+            className={`toggle-btn ${mode === 'guest' ? 'active' : ''}`}
+            onClick={() => setMode('guest')}
+            disabled={mode === 'guest'}
+          >Guest</button>
+        </div>
+
+        <h2>{mode === 'staff' ? 'Staff Login' : 'Guest Login'}</h2>
         
         {/* Global message display */}
         {message && (
@@ -191,14 +246,22 @@ function Login() {
             {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
-          {/* Submit Button */}
-          <button 
-            type="submit" 
-            className="login-btn"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button type="submit" className="login-btn" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+
+            {mode === 'guest' && (
+              <button
+                type="button"
+                className="login-btn secondary"
+                onClick={() => { window.location.href = '/guest/register'; }}
+                disabled={loading}
+              >
+                Register
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
@@ -216,25 +279,47 @@ function Login() {
 
         .login-form-wrapper {
           background: white;
-          padding: 40px;
+          padding: 24px;
           border-radius: 12px;
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
           width: 100%;
-          max-width: 400px;
+          max-width: 420px;
+        }
+
+        .toggle-bar {
+          display:flex;
+          gap:8px;
+          justify-content:center;
+          margin-bottom:12px;
+        }
+
+        .toggle-btn {
+          padding:8px 14px;
+          border-radius:8px;
+          border:1px solid #e1e5e9;
+          background:#f7f9fb;
+          cursor:pointer;
+          font-weight:600;
+        }
+
+        .toggle-btn.active {
+          background: linear-gradient(135deg,#667eea,#764ba2);
+          color:white;
+          border-color:transparent;
         }
 
         h2 {
           text-align: center;
           color: #333;
-          margin-bottom: 30px;
-          font-size: 28px;
+          margin-bottom: 18px;
+          font-size: 22px;
           font-weight: 600;
         }
 
         .login-form {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 16px;
         }
 
         .form-group {
@@ -245,7 +330,7 @@ function Login() {
         label {
           margin-bottom: 8px;
           color: #555;
-          fontWeight: 500;
+          font-weight: 500;
           font-size: 14px;
         }
 
@@ -277,39 +362,35 @@ function Login() {
         .error-text {
           color: #e74c3c;
           font-size: 12px;
-          margin-top: 5px;
+          margin-top: 6px;
           font-weight: 500;
         }
 
         .login-btn {
-          padding: 14px;
+          padding: 12px 16px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           border: none;
           border-radius: 8px;
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
           cursor: pointer;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          margin-top: 10px;
         }
 
-        .login-btn:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        .login-btn.secondary {
+          background: #eee;
+          color: #333;
         }
 
         .login-btn:disabled {
           background: #95a5a6;
           cursor: not-allowed;
-          transform: none;
-          box-shadow: none;
         }
 
         .message {
           padding: 12px 16px;
           border-radius: 8px;
-          margin-bottom: 20px;
+          margin-bottom: 12px;
           text-align: center;
           font-weight: 500;
         }
@@ -324,25 +405,6 @@ function Login() {
           background-color: #f8d7da;
           color: #721c24;
           border: 1px solid #f5c6cb;
-        }
-
-        .register-link {
-          text-align: center;
-          margin-top: 25px;
-          color: #666;
-          font-size: 14px;
-        }
-
-        .register-link a {
-          color: #667eea;
-          text-decoration: none;
-          font-weight: 600;
-          transition: color 0.3s ease;
-        }
-
-        .register-link a:hover {
-          color: #764ba2;
-          text-decoration: underline;
         }
 
         /* Responsive design */

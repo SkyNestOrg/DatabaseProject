@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function Login() {
+function Register() {
   // State for form data
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
 
   // State for UI feedback
@@ -44,83 +45,93 @@ function Login() {
     // Username validation
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (formData.username.length > 20) {
+      newErrors.username = 'Username must be less than 20 characters';
     }
 
     // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    // Confirm password validation
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  // Validate form
-  if (!validateForm()) {
-    return;
-  }
-
-  setLoading(true);
-  setMessage('');
-  setMessageType('');
-
-  try {
-    const response = await axios.post('http://localhost:5000/frontofficelogin', {
-      username: formData.username,
-      password: formData.password
-    });
-
-
-    console.log('Login response:', response.data);
-
-    if (response.data.success) {
-      setMessage(response.data.status || 'Login successful!');
-      setMessageType('success');
-      
-      // Store authentication token
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-      }
-      
-      // Store user data
-      if (response.data.user) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      
-      // Redirect without the verification test
-      setTimeout(() => {
-        if (response.data.user && response.data.user.id) {
-          window.location.href = `/frontofficedashboard?branch_id=${response.data.user.branch_id}`;
-        } else {
-          window.location.href = '/frontofficedashboard';
-        }
-      }, 1500);
-    } else {
-      setMessage(response.data.status || 'Login failed');
-      setMessageType('error');
-    }
-  } catch (error) {
+    e.preventDefault();
     
-      console.error('Login error:', error);
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+    setMessageType('');
+
+    try {
+      // Make API call to backend
+
+  const response = await axios.post('http://localhost:5000/register', {
+  username: formData.username,
+  password: formData.password,
+  confirmPassword: formData.confirmPassword
+});
+
+
+      console.log('Registration response:', response.data);
+
+      // Handle successful registration
+      if (response.data.success) {
+        setMessage(response.data.status || 'Registration successful!');
+        setMessageType('success');
+        
+        // Reset form
+        setFormData({
+          username: '',
+          password: '',
+          confirmPassword: ''
+        });
+        
+        // Optional: Redirect to login page after delay
+        setTimeout(() => {
+          window.location.href = '/login';
+          // or if using React Router: navigate('/login');
+        }, 2000);
+        
+      } else {
+        setMessage(response.data.status || 'Registration failed');
+        setMessageType('error');
+      }
+
+    } catch (error) {
+      console.error('Registration error:', error);
       
       // Handle different types of errors
       if (error.response) {
         // Server responded with error status
         const serverMessage = error.response.data?.status || 
                              error.response.data?.message || 
-                             'Login failed';
+                             'Registration failed';
         setMessage(serverMessage);
         setMessageType('error');
         
         // Handle specific error codes
-        if (error.response.status === 401) {
-          setErrors({ 
-            username: 'Invalid credentials', 
-            password: 'Invalid credentials' 
-          });
+        if (error.response.status === 409) {
+          setErrors({ username: 'Username already exists' });
         }
       } else if (error.request) {
         // Network error
@@ -130,16 +141,16 @@ function Login() {
         // Other error
         setMessage('An unexpected error occurred. Please try again.');
         setMessageType('error');
-  } }finally {
-    setLoading(false);
-  }
-};
-
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="login-container">
-      <div className="login-form-wrapper">
-        <h2>FrontDesk Staff Login</h2>
+    <div className="register-container">
+      <div className="register-form-wrapper">
+        <h2>Guest Registration</h2>
         
         {/* Global message display */}
         {message && (
@@ -148,7 +159,7 @@ function Login() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="register-form">
           {/* Username Field */}
           <div className="form-group">
             <label htmlFor="username">Username</label>
@@ -181,20 +192,41 @@ function Login() {
             {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
+          {/* Confirm Password Field */}
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={errors.confirmPassword ? 'error' : ''}
+              placeholder="Confirm your password"
+              disabled={loading}
+            />
+            {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
+          </div>
+
           {/* Submit Button */}
           <button 
             type="submit" 
-            className="login-btn"
+            className="register-btn"
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
+
+        {/* Login Link */}
+        <div className="login-link">
+          Already have an account? <a href="/login">Login here</a>
+        </div>
       </div>
 
       {/* Inline CSS for styling */}
       <style jsx>{`
-        .login-container {
+        .register-container {
           display: flex;
           justify-content: center;
           align-items: center;
@@ -204,7 +236,7 @@ function Login() {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .login-form-wrapper {
+        .register-form-wrapper {
           background: white;
           padding: 40px;
           border-radius: 12px;
@@ -221,7 +253,7 @@ function Login() {
           font-weight: 600;
         }
 
-        .login-form {
+        .register-form {
           display: flex;
           flex-direction: column;
           gap: 20px;
@@ -235,7 +267,7 @@ function Login() {
         label {
           margin-bottom: 8px;
           color: #555;
-          fontWeight: 500;
+          font-weight: 500;
           font-size: 14px;
         }
 
@@ -271,7 +303,7 @@ function Login() {
           font-weight: 500;
         }
 
-        .login-btn {
+        .register-btn {
           padding: 14px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
@@ -284,12 +316,12 @@ function Login() {
           margin-top: 10px;
         }
 
-        .login-btn:hover:not(:disabled) {
+        .register-btn:hover:not(:disabled) {
           transform: translateY(-1px);
           box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .login-btn:disabled {
+        .register-btn:disabled {
           background: #95a5a6;
           cursor: not-allowed;
           transform: none;
@@ -316,28 +348,28 @@ function Login() {
           border: 1px solid #f5c6cb;
         }
 
-        .register-link {
+        .login-link {
           text-align: center;
           margin-top: 25px;
           color: #666;
           font-size: 14px;
         }
 
-        .register-link a {
+        .login-link a {
           color: #667eea;
           text-decoration: none;
           font-weight: 600;
           transition: color 0.3s ease;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
           color: #764ba2;
           text-decoration: underline;
         }
 
         /* Responsive design */
         @media (max-width: 480px) {
-          .login-form-wrapper {
+          .register-form-wrapper {
             padding: 30px 20px;
           }
           
@@ -350,4 +382,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
