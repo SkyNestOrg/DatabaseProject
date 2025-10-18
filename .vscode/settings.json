@@ -1,37 +1,4 @@
 {
-<<<<<<< HEAD
-    "sqltools.connections": [
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "DataBaseProject",
-            "database": "mydatabase",
-            "username": "yohan"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "ssh": "Disabled",
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "DatabaseProject",
-            "database": "mydatabase",
-            "username": "root"
-        }
-    ]
-}
-=======
   "sqltools.connections": [
     {
       "mysqlOptions": {
@@ -51,4 +18,3 @@
   ],
   "git.ignoreLimitWarning": true
 }
->>>>>>> origin/main

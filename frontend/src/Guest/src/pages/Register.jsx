@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-function Login() {
-  // ================== State ==================
-  const [formData, setFormData] = useState({ username: '', password: '' });
-=======
 function Register() {
   // State for form data
   const [formData, setFormData] = useState({
@@ -16,7 +11,6 @@ function Register() {
   });
 
   // State for UI feedback
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -37,10 +31,6 @@ function Register() {
 
   const validateForm = () => {
     const newErrors = {};
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-    if (!formData.username.trim()) newErrors.username = 'Username is required';
-    if (!formData.password) newErrors.password = 'Password is required';
-=======
 
     // Username validation
     if (!formData.username.trim()) {
@@ -65,17 +55,10 @@ function Register() {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-  // ================== Submit Handler ==================
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-=======
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,58 +67,12 @@ function Register() {
     if (!validateForm()) {
       return;
     }
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
 
     setLoading(true);
     setMessage('');
     setMessageType('');
 
     try {
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-      const response = await axios.post('/frontdesklogin', formData);
-
-      console.log('Login response:', response.data);
-
-      if (response.data.success) {
-        setMessage('Login successful!');
-        setMessageType('success');
-
-        // ✅ Store JWT token
-        localStorage.setItem('token', response.data.token);
-
-        // ✅ Store user details
-        if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-        }
-
-        // ✅ Redirect based on role
-        setTimeout(() => {
-          if (response.data.user.role === 'receptionist') {
-            navigate('/frontofficedashboard');
-          } else {
-            navigate('/frontofficedashboard');
-          }
-        }, 1200);
-      } else {
-        setMessage(response.data.message || 'Invalid username or password');
-        setMessageType('error');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-
-      if (error.response) {
-        const msg =
-          error.response.data?.error ||
-          error.response.data?.message ||
-          'Login failed';
-        setMessage(msg);
-        setMessageType('error');
-        if (error.response.status === 401) {
-          setErrors({
-            username: 'Invalid credentials',
-            password: 'Invalid credentials',
-          });
-=======
       // Make API call to backend
 
   const response = await axios.post('http://localhost:5000/register', {
@@ -185,7 +122,6 @@ function Register() {
         // Handle specific error codes
         if (error.response.status === 409) {
           setErrors({ username: 'Username already exists' });
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
         }
       } else if (error.request) {
         setMessage('Network error. Please check your connection.');
@@ -201,31 +137,19 @@ function Register() {
 
   // ================== UI ==================
   return (
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-    <div className="login-container">
-      <div className="login-form-wrapper">
-        <h2>FrontDesk Staff Login</h2>
-
-=======
     <div className="register-container">
       <div className="register-form-wrapper">
         <h2>Guest Registration</h2>
         
         {/* Global message display */}
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
         {message && (
           <div className={`message ${messageType}`}>
             {message}
           </div>
         )}
 
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-        <form onSubmit={handleSubmit} className="login-form">
-          {/* Username */}
-=======
         <form onSubmit={handleSubmit} className="register-form">
           {/* Username Field */}
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
@@ -278,17 +202,12 @@ function Register() {
           </div>
 
           {/* Submit Button */}
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-=======
           <button 
             type="submit" 
             className="register-btn"
             disabled={loading}
           >
             {loading ? 'Registering...' : 'Register'}
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
           </button>
         </form>
 
@@ -389,8 +308,6 @@ function Register() {
           box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-=======
         .register-btn:disabled {
           background: #95a5a6;
           cursor: not-allowed;
@@ -398,7 +315,6 @@ function Register() {
           box-shadow: none;
         }
 
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
         .message {
           padding: 12px 16px;
           border-radius: 8px;
@@ -418,8 +334,6 @@ function Register() {
           color: #721c24;
           border: 1px solid #f5c6cb;
         }
-<<<<<<< HEAD:frontdeskoffice-end/src/pages/Login.jsx
-=======
 
         .login-link {
           text-align: center;
@@ -450,7 +364,6 @@ function Register() {
             font-size: 24px;
           }
         }
->>>>>>> origin/main:frontend/src/Guest/src/pages/Register.jsx
       `}</style>
     </div>
   );
