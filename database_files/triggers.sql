@@ -131,7 +131,7 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE TRIGGER update_bill_service_total 
+CREATE TRIGGER update_bill_after_service_completed 
 AFTER UPDATE ON service_request
 FOR EACH ROW
 BEGIN
@@ -217,3 +217,21 @@ END//
 DELIMITER ;
 
 -- ----------------------------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER after_booking_cancelled
+AFTER UPDATE ON Booked_Room
+FOR EACH ROW
+BEGIN
+    -- Check if the status changed to 'Cancelled'
+    IF NEW.status = 'Cancelled' AND OLD.status != 'Cancelled' THEN
+        -- Update the room to Available
+        UPDATE Room
+        SET current_status = 'Available'
+        WHERE room_number = NEW.room_number
+          AND branch_id = NEW.branch_id;
+    END IF;
+END$$
+
+DELIMITER ;

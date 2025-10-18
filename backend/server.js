@@ -5,15 +5,17 @@ import cors from "cors";
 import bodyParser from "body-parser";
 const app = express();
 
-// Enable CORS for all routes
+
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true })); // replaces body-parser.urlencoded()
+app.use(bodyParser.json()); 
+app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
+app.use(express.json());
 
 
 //common routes
 import TokenAuth from './routes/TokenAuth.js';
 app.use('/tokenauth', TokenAuth);
+
 
 // guest routes (ESM style import instead of require)
 import GuestRegister from "./routes/Guest/GuestRegister.js";
@@ -72,7 +74,8 @@ app.use("/frontofficetokenauth", FrontOfficeTokenAuth);
 
 // Booking Management (Front Desk)
 import FrontDeskBooking from "./routes/FrontDesk/BookingHandle.js"; // includes create/cancel bookings
-app.use("/frontdesk/bookings", FrontDeskBooking);
+app.use("/frontdesk/api/booking", FrontDeskBooking);
+
 
 // Check-in and Check-out
 import CheckIn from "./routes/FrontDesk/CheckIn.js";
@@ -81,12 +84,13 @@ app.use("/frontdesk/checkin", CheckIn);
 import CheckOut from "./routes/FrontDesk/CheckOut.js";
 app.use("/frontdesk/checkout", CheckOut);
 
+// **NEW: Booking Details endpoint for Check In/Out page**
+import FetchDetails from "./routes/FrontDesk/FetchDetails.js"; // ✅ CORRECT NAME
+app.use("/frontdesk/fetch", FetchDetails); // ✅ CORRECT ROUTE
+
 // Payments
 import PaymentAndBill from "./routes/FrontDesk/Payement_and_Bill.js"; // includes makePayment, cancelPayment, view bills
-app.use("/frontdesk/payments", PaymentAndBill);
-
-// import FrontDeskClasses from "./routes/FrontDesk/FrontDeskClasses.js";
-// app.use("/frontdesk/classes", FrontDeskClasses);
+app.use("/frontdesk/api/payments", PaymentAndBill);
 
 
 

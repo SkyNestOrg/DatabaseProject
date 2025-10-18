@@ -1,101 +1,264 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import checkAuth from '../checkAuth';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import checkAuth from "../checkAuth";
 
 function Dashboard() {
-  const [user, setUser] = useState(null);
-  const [bookings, setBookings] = useState([]);
-  const [formData, setFormData] = useState({ guestId: '', roomNumber: '', checkinDate: '', checkoutDate: '', bill: '' });
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    guestId: "",
+    roomNumber: "",
+    bookingDate: "",
+    checkInDate: "",
+    checkoutDate: "",
+  });
+  const [message, setMessage] = useState("");
+  const [searchId, setSearchId] = useState("");
+  const [foundBooking, setFoundBooking] = useState(null);
 
-  useEffect(() => {
+  // ✅ Check login
+  React.useEffect(() => {
     const init = async () => {
       const data = await checkAuth();
-      if (!data.success) return navigate('/frontofficelogin');
-      setUser(JSON.parse(localStorage.getItem('user')));
-      
-      try {
-        const res = await axios.get('/frontdesk/bookings/bookings', {
-          headers: { 'x-access-token': localStorage.getItem('token') }
-        });
-        setBookings(res.data.bookings || []);
-      } catch (err) {
-        console.log('No bookings endpoint yet');
-      }
+      if (!data.success) navigate("/frontofficelogin");
+      else setUser(JSON.parse(localStorage.getItem("user")));
     };
     init();
   }, [navigate]);
 
+  // ✅ Create Booking
   const handleCreateBooking = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/frontdesk/bookings/booking', formData, {
-        headers: { 'x-access-token': localStorage.getItem('token') }
+      const res = await axios.post("/frontdesk/api/booking", formData, {
+        headers: { "x-access-token": localStorage.getItem("token") },
       });
-      setMessage('Booking created!');
-      setFormData({ guestId: '', roomNumber: '', checkinDate: '', checkoutDate: '', bill: '' });
+      if (res.data.success) {
+        setMessage(`✅ Booking created! ID: ${res.data.bookingId}`);
+        setFormData({
+          guestId: "",
+          roomNumber: "",
+          bookingDate: "",
+          checkInDate: "",
+          checkoutDate: "",
+        });
+      } else setMessage(res.data.message || "Error creating booking");
     } catch (err) {
-      setMessage('Error creating booking');
+      console.error(err);
+      setMessage("❌ Error creating booking");
     }
   };
 
+  // ✅ Fetch Booking by ID
+  const handleFetchBooking = async () => {
+    try {
+      const res = await axios.get(`/frontdesk/fetch/${searchId}`, {
+        headers: { "x-access-token": localStorage.getItem("token") },
+      });
+
+      if (res.data.success) {
+        setFoundBooking(res.data.booking);
+        setMessage("");
+      } else {
+        setFoundBooking(null);
+        setMessage("Booking not found");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Error fetching booking");
+    }
+  };
+
+  // ✅ Cancel Booking
+  const handleCancelBooking = async (bookingId) => {
+  if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+
+  try {
+    const res = await axios.post(
+      `/frontdesk/api/booking/cancel`,
+      { booking_id: bookingId }, // ✅ Pass bookingId in JSON body
+      {
+        headers: { "x-access-token": localStorage.getItem("token") },
+      }
+    );
+
+    if (res.data.success) {
+      setMessage("✅ Booking cancelled successfully!");
+      setFoundBooking((prev) =>
+        prev ? { ...prev, status: "Cancelled" } : null
+      );
+    } else {
+      setMessage(res.data.message || "Error cancelling booking");
+    }
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Error cancelling booking");
+  }
+};
+
+
+  // ✅ Logout
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/frontofficelogin');
+    navigate("/frontofficelogin");
   };
 
   return (
-    <div style={styles.dashboard}>
-      <header style={styles.header}>
-        <h1>Front Desk Dashboard</h1>
-        <button onClick={handleLogout}>Logout</button>
+    <div className="grid grid-cols-[200px_1fr] h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-gray-800 text-white p-4 flex justify-between col-span-2">
+        <h1 className="text-xl font-bold">Front Desk Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="px-2 py-1 bg-red-500 text-white rounded"
+        >
+          Logout
+        </button>
       </header>
 
-      <nav style={styles.sidebar}>
-        <button onClick={() => navigate('/check')}>Check In/Out</button>
-        <button onClick={() => navigate('/payment')}>Payment</button>
-        <button onClick={() => navigate('/searchguestdetails')}>Search Guest</button>
+      {/* Sidebar */}
+      <nav className="bg-gray-700 p-4 text-white">
+        <button
+          onClick={() => navigate("/check")}
+          className="block w-full mb-2 p-2 bg-blue-500 rounded hover:bg-blue-600"
+        >
+          Check In/Out
+        </button>
+        <button
+          onClick={() => navigate("/payment")}
+          className="block w-full mb-2 p-2 bg-blue-500 rounded hover:bg-blue-600"
+        >
+          Payment
+        </button>
+        <button
+          onClick={() => navigate("/searchguestdetails")}
+          className="block w-full p-2 bg-blue-500 rounded hover:bg-blue-600"
+        >
+          Search Guest
+        </button>
       </nav>
 
-      <main style={styles.main}>
-        <h2>Welcome, {user?.username}!</h2>
-        
-        <form onSubmit={handleCreateBooking} style={styles.form}>
-          <h3>Create Booking</h3>
-          <input placeholder="Guest ID" value={formData.guestId} onChange={(e) => setFormData({...formData, guestId: e.target.value})} />
-          <input placeholder="Room #" value={formData.roomNumber} onChange={(e) => setFormData({...formData, roomNumber: e.target.value})} />
-          <input type="date" value={formData.checkinDate} onChange={(e) => setFormData({...formData, checkinDate: e.target.value})} />
-          <input type="date" value={formData.checkoutDate} onChange={(e) => setFormData({...formData, checkoutDate: e.target.value})} />
-          <input type="number" placeholder="Bill $" value={formData.bill} onChange={(e) => setFormData({...formData, bill: e.target.value})} />
-          <button type="submit">Create Booking</button>
+      {/* Main */}
+      <main className="p-4 overflow-y-auto">
+        <h2 className="text-2xl font-semibold mb-4">
+          Welcome, {user?.name || "Front Desk Agent"}!
+        </h2>
+
+        {/* 🟢 Create Booking */}
+        <form
+          onSubmit={handleCreateBooking}
+          className="flex flex-col gap-2 max-w-md mb-8"
+        >
+          <h3 className="text-lg font-medium">Create Booking</h3>
+          <input
+            placeholder="Guest ID"
+            value={formData.guestId}
+            onChange={(e) =>
+              setFormData({ ...formData, guestId: e.target.value })
+            }
+            className="p-2 border rounded"
+          />
+          <input
+            placeholder="Room Number"
+            value={formData.roomNumber}
+            onChange={(e) =>
+              setFormData({ ...formData, roomNumber: e.target.value })
+            }
+            className="p-2 border rounded"
+          />
+          <input
+            type="date"
+            value={formData.bookingDate}
+            onChange={(e) =>
+              setFormData({ ...formData, bookingDate: e.target.value })
+            }
+            className="p-2 border rounded"
+          />
+          <input
+            type="date"
+            value={formData.checkInDate}
+            onChange={(e) =>
+              setFormData({ ...formData, checkInDate: e.target.value })
+            }
+            className="p-2 border rounded"
+          />
+          <input
+            type="date"
+            value={formData.checkoutDate}
+            onChange={(e) =>
+              setFormData({ ...formData, checkoutDate: e.target.value })
+            }
+            className="p-2 border rounded"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Create Booking
+          </button>
         </form>
 
-        {message && <p>{message}</p>}
-        
-        {bookings.length > 0 && (
-          <table style={styles.table}>
-            <thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Status</th></tr></thead>
-            <tbody>{bookings.map(b => (
-              <tr key={b.booking_id}><td>{b.booking_id}</td><td>{b.guestId}</td><td>{b.roomNumber}</td><td>{b.status}</td></tr>
-            ))}</tbody>
-          </table>
+        {/* 🔍 Fetch Existing Booking */}
+        <div className="max-w-md mb-6">
+          <h3 className="text-lg font-medium mb-2">Find Existing Booking</h3>
+          <div className="flex gap-2 mb-2">
+            <input
+              placeholder="Enter Booking ID"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value)}
+              className="flex-1 p-2 border rounded"
+            />
+            <button
+              onClick={handleFetchBooking}
+              className="px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Search
+            </button>
+          </div>
+
+          {foundBooking && (
+            <div className="border p-3 rounded bg-white shadow">
+              <p>
+                <strong>Booking ID:</strong> {foundBooking.booking_id}
+              </p>
+              <p>
+                <strong>Guest:</strong> {foundBooking.guest_name}
+              </p>
+              <p>
+                <strong>Status:</strong> {foundBooking.status}
+              </p>
+              <p>
+                <strong>Room(s):</strong> {foundBooking.rooms}
+              </p>
+
+              {foundBooking.status !== "Cancelled" && (
+                <button
+                  onClick={() => handleCancelBooking(foundBooking.booking_id)}
+                  className="mt-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Cancel Booking
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 🟡 Message */}
+        {message && (
+          <p
+            className={`p-2 rounded ${
+              message.includes("✅")
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {message}
+          </p>
         )}
       </main>
     </div>
   );
 }
-
-const styles = {
-  dashboard: { display: 'grid', gridTemplateColumns: '200px 1fr', height: '100vh' },
-  header: { background: '#2c3e50', color: 'white', padding: '20px', display: 'flex', justifyContent: 'space-between' },
-  sidebar: { background: '#34495e', padding: '20px' }, 
-  main: { padding: '20px', overflowY: 'auto' },
-  form: { display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '400px', margin: '20px 0' },
-  input: { padding: '8px', borderRadius: '4px', border: '1px solid #ccc' },
-  button: { padding: '8px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px' },
-  table: { width: '100%', borderCollapse: 'collapse', marginTop: '20px' },
-};
 
 export default Dashboard;

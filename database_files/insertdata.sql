@@ -128,4 +128,3 @@ INSERT INTO `Room` (`room_number`, `current_status`, `room_type`, `branch_id`) V
 INSERT INTO taxes_and_charges(revision_id, revision_date, latest_tax_percentage, latest_surcharge_percentage) VALUES
 (1, '2025-10-06', 15, 5),
 (2, '2025-10-01', 25, 5);
-

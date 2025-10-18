@@ -1,212 +1,211 @@
-// import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-// import checkAuth from './checkAuth';
-
-// function Payment() {
-//   const [bookingId, setBookingId] = useState('');
-//   const [paymentMethod, setPaymentMethod] = useState('cash');
-//   const [paidAmount, setPaidAmount] = useState('');
-//   const [message, setMessage] = useState('');
-//   const [billData, setBillData] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const authenticate = async () => {
-//       const data = await checkAuth();
-//       if (!data.success) {
-//         navigate('/frontofficelogin');
-//       }
-//       setLoading(false);
-//     };
-//     authenticate();
-//   }, [navigate]);
-
-//   const handleMakePayment = async () => {
-//     setMessage('');
-//     try {
-//       const response = await axios.post(`/frontdesk/payments/makePayment/${bookingId}`, {
-//         payment_method: paymentMethod,
-//         paid_amount: paidAmount
-//       }, {
-//         headers: { 'x-access-token': localStorage.getItem('token') }
-//       });
-//       setMessage(response.data.message || 'Payment made successfully');
-//     } catch (error) {
-//       setMessage('Error making payment');
-//     }
-//   };
-
-//   const handleCancelPayment = async () => {
-//     setMessage('');
-//     try {
-//       const response = await axios.post(`/frontdesk/payments/cancelPayment/${bookingId}`, {}, {
-//         headers: { 'x-access-token': localStorage.getItem('token') }
-//       });
-//       setMessage(response.data.message || 'Last payment cancelled');
-//     } catch (error) {
-//       setMessage('Error cancelling payment');
-//     }
-//   };
-
-//   const handleViewBill = async () => {
-//     setMessage('');
-//     setBillData(null);
-//     try {
-//       const response = await axios.get(`/frontdesk/payments/bills/${bookingId}`, {
-//         headers: { 'x-access-token': localStorage.getItem('token') }
-//       });
-//       setBillData(response.data);
-//     } catch (error) {
-//       setMessage('Error viewing bill');
-//     }
-//   };
-
-//   const styles = {
-//     container: {
-//       display: 'flex',
-//       flexDirection: 'column',
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       minHeight: '100vh',
-//       background: 'linear-gradient(135deg, #f6f9fc, #dbe9f4)',
-//       padding: '2rem',
-//     },
-//     form: {
-//       display: 'flex',
-//       flexDirection: 'column',
-//       gap: '1rem',
-//       width: '300px',
-//     },
-//     input: {
-//       padding: '0.5rem',
-//       borderRadius: '4px',
-//       border: '1px solid #ccc',
-//     },
-//     select: {
-//       padding: '0.5rem',
-//       borderRadius: '4px',
-//       border: '1px solid #ccc',
-//     },
-//     button: {
-//       padding: '0.5rem',
-//       backgroundColor: '#1abc9c',
-//       color: 'white',
-//       border: 'none',
-//       borderRadius: '4px',
-//       cursor: 'pointer',
-//     },
-//     bill: {
-//       marginTop: '2rem',
-//       whiteSpace: 'pre-wrap',
-//     },
-//   };
-
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   return (
-//     <div style={styles.container}>
-//       <h2>Payment Management</h2>
-//       <form style={styles.form}>
-//         <input
-//           style={styles.input}
-//           type="text"
-//           placeholder="Booking ID"
-//           value={bookingId}
-//           onChange={(e) => setBookingId(e.target.value)}
-//           required
-//         />
-//         <select
-//           style={styles.select}
-//           value={paymentMethod}
-//           onChange={(e) => setPaymentMethod(e.target.value)}
-//         >
-//           <option value="cash">Cash</option>
-//           <option value="card">Card</option>
-//           <option value="online">Online</option>
-//         </select>
-//         <input
-//           style={styles.input}
-//           type="number"
-//           placeholder="Paid Amount"
-//           value={paidAmount}
-//           onChange={(e) => setPaidAmount(e.target.value)}
-//           required
-//         />
-//         <button type="button" style={styles.button} onClick={handleMakePayment}>Make Payment</button>
-//         <button type="button" style={styles.button} onClick={handleCancelPayment}>Cancel Last Payment</button>
-//         <button type="button" style={styles.button} onClick={handleViewBill}>View Bill</button>
-//       </form>
-//       {message && <p>{message}</p>}
-//       {billData && (
-//         <div style={styles.bill}>
-//           <h3>Bill Details</h3>
-//           <pre>{JSON.stringify(billData, null, 2)}</pre>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default Payment;
-
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import checkAuth from '../checkAuth';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import checkAuth from "../checkAuth";
 
 function Payment() {
-  const [bookingId, setBookingId] = useState('');
-  const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState('');
+  const [bookingId, setBookingId] = useState("");
+  const [amount, setAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [billData, setBillData] = useState(null);
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth().then(data => {
-      if (!data.success) navigate('/frontofficelogin');
+    checkAuth().then((data) => {
+      if (!data.success) navigate("/frontofficelogin");
       setLoading(false);
     });
   }, [navigate]);
 
-  const handlePayment = async () => {
+  // Fetch Bill Details
+  const fetchBillDetails = async () => {
+    if (!bookingId || isNaN(bookingId)) {
+      setBillData(null);
+      setMessage("Please enter a valid booking ID");
+      return;
+    }
     try {
-      await axios.post(`/frontdesk/payments/makePayment/${bookingId}`, {
-        payment_method: 'cash',
-        paid_amount: amount
-      }, {
-        headers: { 'x-access-token': localStorage.getItem('token') }
+      const res = await axios.get(`/frontdesk/api/payments/bills/${bookingId}`, {
+        headers: { "x-access-token": localStorage.getItem("token") },
       });
-      setMessage('Payment successful!');
+      setBillData(res.data);
+      setMessage("");
     } catch (err) {
-      setMessage('Payment failed');
+      setMessage("Failed to fetch bill details");
+      setBillData(null);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  // Make Payment
+  const handleMakePayment = async () => {
+    if (!amount || !bookingId) {
+      setMessage("Please enter amount and booking ID");
+      return;
+    }
+    try {
+      await axios.post(
+        `/frontdesk/api/payments/add/${bookingId}`,
+        {
+          payment_method: paymentMethod,
+          paid_amount: parseFloat(amount),
+        },
+        { headers: { "x-access-token": localStorage.getItem("token") } }
+      );
+      setMessage("Payment successful!");
+      setAmount("");
+      fetchBillDetails();
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Payment failed");
+    }
+  };
+
+  // Cancel Last Payment
+  const handleCancelPayment = async () => {
+    if (!bookingId) {
+      setMessage("Please enter a booking ID");
+      return;
+    }
+    try {
+      await axios.post(`/frontdesk/api/payments/cancel/${bookingId}`, {}, {
+        headers: { "x-access-token": localStorage.getItem("token") },
+      });
+      setMessage("Last payment cancelled");
+      fetchBillDetails();
+    } catch (err) {
+      setMessage("Cancel payment failed");
+    }
+  };
+
+  if (loading) return <div className="text-center mt-10">Loading...</div>;
 
   return (
-    <div style={styles.container}>
-      <h2>Payment</h2>
-      <div style={styles.form}>
-        <input placeholder="Booking ID" value={bookingId} onChange={(e) => setBookingId(e.target.value)} />
-        <input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        <button onClick={handlePayment}>Make Payment</button>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Payment Management</h1>
+
+      <div className="flex flex-col gap-4 w-full max-w-md">
+        <input
+          type="number"
+          placeholder="Booking ID"
+          value={bookingId}
+          onChange={(e) => setBookingId(e.target.value)}
+          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="number"
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <select
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+          className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="cash">Cash</option>
+          <option value="card">Card</option>
+          <option value="online">Online</option>
+        </select>
+
+        <button
+          onClick={fetchBillDetails}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          View Bill
+        </button>
+
+        <button
+          onClick={handleMakePayment}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        >
+          Make Payment
+        </button>
+
+        <button
+          onClick={handleCancelPayment}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+        >
+          Cancel Last Payment
+        </button>
       </div>
-      {message && <p>{message}</p>}
+
+      {message && (
+        <p
+          className={`mt-4 p-2 rounded-lg ${
+            message.toLowerCase().includes("success") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
+      {billData && (
+        <div className="mt-6 p-4 bg-white rounded-lg shadow-md w-full max-w-4xl">
+          {/* Guest Info */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Guest Information</h2>
+            <p><strong>Name:</strong> {billData.guest.first_name} {billData.guest.last_name}</p>
+            <p><strong>Email:</strong> {billData.guest.email}</p>
+            <p><strong>Phone:</strong> {billData.guest.phone_number}</p>
+          </div>
+
+          {/* Branch Info */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Branch Information</h2>
+            <p><strong>Name:</strong> {billData.branch.branch_name}</p>
+            <p><strong>Address:</strong> {billData.branch.branch_address}, {billData.branch.branch_city}</p>
+            <p><strong>Contact:</strong> {billData.branch.branch_contact}</p>
+          </div>
+
+          {/* Booking Info */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Booking Information</h2>
+            <p><strong>Booking ID:</strong> {billData.booking.booking_id}</p>
+            <p><strong>Date:</strong> {new Date(billData.booking.booking_date).toLocaleString()}</p>
+          </div>
+
+          {/* Payments */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Payments</h2>
+            {billData.payments.length > 0 ? (
+              <table className="w-full table-auto border border-gray-300">
+                <thead className="bg-gray-200">
+                  <tr>
+                    <th className="border px-2 py-1">Reference</th>
+                    <th className="border px-2 py-1">Method</th>
+                    <th className="border px-2 py-1">Amount</th>
+                    <th className="border px-2 py-1">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {billData.payments.map((pay, idx) => (
+                    <tr key={idx} className="text-center">
+                      <td className="border px-2 py-1">{pay.payment_reference}</td>
+                      <td className="border px-2 py-1">{pay.payment_method}</td>
+                      <td className="border px-2 py-1">{pay.paid_amount}</td>
+                      <td className="border px-2 py-1">{new Date(pay.payment_date).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : <p>No payments made.</p>}
+          </div>
+
+          {/* Summary */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Summary</h2>
+            <p><strong>Grand Total:</strong> {billData.summary.grand_total}</p>
+            <p><strong>Total Paid:</strong> {billData.summary.total_paid}</p>
+            <p><strong>Due Amount:</strong> {billData.summary.due_amount}</p>
+            <p><strong>Bill Status:</strong> {billData.summary.bill_status}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-const styles = {
-  container: { display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', padding: '20px' },
-  form: { display: 'flex', flexDirection: 'column', gap: '10px', width: '300px' },
-  input: { padding: '8px', borderRadius: '4px', border: '1px solid #ccc' },
-  button: { padding: '8px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '4px' }
-};
-
 export default Payment;
+
