@@ -3,11 +3,15 @@ import axios from 'axios';
 async function checkAuth() {
   try {
     const res = await axios.get('/frontofficetokenauth', {
-      headers: { 'x-access-token': localStorage.getItem('token') }
+      headers: {
+        'x-access-token': localStorage.getItem('token')
+      }
     });
-    return res.data;
+    console.log(res.data.success);
+    return res.data; // Return the full data object
   } catch (err) {
-    return { success: false };
+    console.log(err);
+    return { success: false }; // Return a consistent shape
   }
 }
 

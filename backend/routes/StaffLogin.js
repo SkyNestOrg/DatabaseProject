@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 
   try {
     // Try staff table first
-    const [staffRows] = await db.query('SELECT * FROM staff_user WHERE username = ?', [username]);
+    const [staffRows] = await db.query('SELECT * FROM Staff_User WHERE username = ?', [username]);
 
     if (staffRows && staffRows.length > 0) {
       const user = staffRows[0];
