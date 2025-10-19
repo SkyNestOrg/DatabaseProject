@@ -15,7 +15,7 @@ END$$
 DELIMITER ;
 
 
--- Trigger 2/a: Update room status to 'Available' when booked_room status becomes 'CheckedOut'
+-- Trigger 2/: Update room status to 'Available' when booked_room status becomes 'CheckedOut'
 DELIMITER $$
 
 CREATE TRIGGER after_booked_room_checkedout
@@ -127,7 +127,7 @@ END;
 
 DELIMITER ;
 
--------------------------------------------------
+-- Trigger 7: Update Bill when service_request status = 'Completed'
 
 DELIMITER //
 
@@ -199,8 +199,8 @@ BEGIN
 DELIMITER ;
 
 
-------------------------------------------------------------------------
---error handling in bill status = (paid with >0 due_amount)
+--trigger 8: Update Bill status automatically when due_amount > 0
+DROP TRIGGER IF EXISTS update_bill_status_on_due_amount;
 
 DELIMITER //
 
@@ -216,8 +216,7 @@ END//
 
 DELIMITER ;
 
--- ----------------------------------------------------------------------------------------------
-
+-- Trigger 9: Update room status to 'Available' when booked_room status becomes 'Cancelled'
 DELIMITER $$
 
 CREATE TRIGGER after_booking_cancelled
@@ -233,5 +232,85 @@ BEGIN
           AND branch_id = NEW.branch_id;
     END IF;
 END$$
+
+DELIMITER ;
+
+-- Trigger 10: Update room status to 'Available' when booking status becomes 'Cancelled'
+
+DELIMITER $$
+
+CREATE TRIGGER after_booking_cancelled_update_room_status
+AFTER UPDATE ON Booked_Room
+FOR EACH ROW
+BEGIN
+    -- Check if the status changed to 'Cancelled'
+    IF NEW.status = 'Cancelled' AND OLD.status != 'Cancelled' THEN
+        -- Update the room to Available
+        UPDATE Room
+        SET current_status = 'Available'
+        WHERE room_number = NEW.room_number
+          AND branch_id = NEW.branch_id;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Trigger 11: Update Bill status automatically when due_amount becomes zero
+
+DROP TRIGGER IF EXISTS update_bill_status_on_due_amount_become_zero;
+DELIMITER //
+
+CREATE TRIGGER update_bill_status_on_due_amount_become_zero
+BEFORE UPDATE ON Bill
+FOR EACH ROW
+BEGIN
+    IF NEW.due_amount = 0 AND (OLD.due_amount > 0 ) THEN
+        SET NEW.bill_status = 'Paid';
+    END IF;
+END;
+//
+
+DELIMITER ;
+-- Trigger 12: Update Bill after Payment deletion
+DELIMITER //
+
+CREATE TRIGGER trg_update_bill_after_payment_delete
+AFTER DELETE ON Payment
+FOR EACH ROW
+BEGIN
+    DECLARE total_paid DECIMAL(10,2);
+    DECLARE room_total DECIMAL(10,2);
+    DECLARE service_total DECIMAL(10,2);
+    DECLARE tax_amount DECIMAL(10,2);
+    DECLARE original_total DECIMAL(10,2);
+    DECLARE new_due DECIMAL(10,2);
+
+    -- Get current bill details
+    SELECT room_total, service_total, tax_amount
+    INTO room_total, service_total, tax_amount
+    FROM Bill
+    WHERE bill_id = OLD.bill_id;
+
+    SET original_total = COALESCE(room_total,0) + COALESCE(service_total,0) + COALESCE(tax_amount,0);
+
+    -- Sum of remaining payments
+    SELECT COALESCE(SUM(paid_amount),0)
+    INTO total_paid
+    FROM Payment
+    WHERE bill_id = OLD.bill_id;
+
+    -- Calculate new due
+    SET new_due = original_total - total_paid;
+
+    -- Update Bill table
+    UPDATE Bill
+    SET due_amount = new_due,
+        bill_status = CASE 
+                        WHEN new_due <= 0 THEN 'Paid'
+                        ELSE 'Pending'
+                      END
+    WHERE bill_id = OLD.bill_id;
+END;
+//
 
 DELIMITER ;

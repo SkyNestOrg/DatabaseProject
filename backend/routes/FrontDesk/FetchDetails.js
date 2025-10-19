@@ -77,13 +77,14 @@ router.get("/:bookingId", authenticateToken, async (req, res) => {
     );
 
     const guest = guestRows[0];
-
+    console.log("Guest details:", guest);
     // 3️⃣ Fetch branch details
     const [branchRows] = await connection.query(
       "SELECT branch_name, city, contact_number FROM Branch WHERE branch_id = ?",
       [booking.branch_id]
     );
     const branch = branchRows[0];
+    console.log("Branch details:", branch);
 
     // 4️⃣ Fetch booked rooms
     const [bookedRoomsRows] = await connection.query(
@@ -93,6 +94,7 @@ router.get("/:bookingId", authenticateToken, async (req, res) => {
        WHERE br.booking_id = ?`,
       [bookingId]
     );
+    console.log("Booked rooms details:", bookedRoomsRows);
 
     const roomNumbers = bookedRoomsRows.map(r => r.room_number).join(", ");
     const roomTypes = bookedRoomsRows.map(r => r.room_type).join(", ");
@@ -122,6 +124,8 @@ router.get("/:bookingId", authenticateToken, async (req, res) => {
         room_types: roomTypes
       }
     });
+    console.log(res)
+
 
   } catch (err) {
     await connection.rollback();

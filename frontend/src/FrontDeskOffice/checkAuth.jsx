@@ -1,19 +1,14 @@
-import axios from "axios";
+import axios from 'axios';
 
-const checkAuth = async () => {
+async function checkAuth() {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) return { success: false };
-
-    const res = await axios.get("/frontdesk/api/verify", {
-      headers: { "x-access-token": token },
+    const res = await axios.get('/frontofficetokenauth', {
+      headers: { 'x-access-token': localStorage.getItem('token') }
     });
-
     return res.data;
   } catch (err) {
-    console.error("Auth check failed:", err);
     return { success: false };
   }
-};
+}
 
 export default checkAuth;

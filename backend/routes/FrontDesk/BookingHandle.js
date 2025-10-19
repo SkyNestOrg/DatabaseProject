@@ -5,7 +5,7 @@ import { authenticateToken } from "./middleware/authmiddleware.js";
 const router = express.Router();
 
 // Create Booking - UPDATED TO MATCH YOUR REQUIREMENTS
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/add", authenticateToken, async (req, res) => {
   const { guestId, roomNumber, bookingDate, checkInDate, checkoutDate } = req.body;
 
   console.log(guestId, roomNumber, bookingDate, checkInDate, checkoutDate);
@@ -24,6 +24,7 @@ router.post("/", authenticateToken, async (req, res) => {
       "SELECT guest_id FROM Guest WHERE guest_id = ?",
       [guestId]
     );
+    
     if (guestResult.length === 0) {
       await connection.rollback();
       connection.release();
