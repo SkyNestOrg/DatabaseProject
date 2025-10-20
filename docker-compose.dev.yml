@@ -1,0 +1,59 @@
+services:
+  # 🗄 DATABASE
+  db:
+    image: mysql:8.0
+    container_name: dev_db
+    command: --lower_case_table_names=1
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: SkyNest
+      MYSQL_USER: hotel_user
+      MYSQL_PASSWORD: hotel_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - ~/docker-init:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/mysql
+    networks:
+      - devnet
+
+  # ⚙️ BACKEND
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: dev_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=hotel_user
+      - DB_PASSWORD=hotel_pass
+      - DB_NAME=SkyNest
+      - JWT_SECRET=dev-secret-key
+      - NODE_ENV=development
+    depends_on:
+      - db
+    networks:
+      - devnet
+
+  # 💻 FRONTEND
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: dev_frontend
+    ports:
+      - "5573:5573"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - devnet
+
+volumes:
+  db_data:
+
+networks:
+  devnet:

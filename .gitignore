@@ -1,4 +1,15 @@
-/admin-end/backend/.env
-/admin-end/backend/node_modules/
-/admin-end/frontend/node_modules/
-admin-end/backend/.env
+﻿# Dependencies
+node_modules/
+backend/node_modules/
+serviceoffice-end/node_modules/
+guest-end/node_modules/
+management-end/node_modules/
+frontdeskoffice-end/node_modules/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
