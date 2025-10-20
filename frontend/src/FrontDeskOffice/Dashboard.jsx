@@ -354,30 +354,63 @@ function Dashboard() {
   }, [navigate]);
 
   // ✅ Create Booking
-  const handleCreateBooking = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post("/frontdesk/api/booking/add", formData, {
-        headers: { "x-access-token": localStorage.getItem("token") },
-      });
+  // const handleCreateBooking = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await axios.post("/frontdesk/api/booking/add", formData, {
+  //       headers: { "x-access-token": localStorage.getItem("token") },
+  //     });
       
-      if (res.data.success) {
-        setMessage(`✅ Booking created! ID: ${res.data.bookingId}`);
-        setFormData({
-          guestId: "",
-          roomNumber: "",
-          bookingDate: "",
-          checkInDate: "",
-          checkoutDate: "",
-        });
-      } else {
-        setMessage(res.data.message || "Error creating booking");
-      }
-    } catch (err) {
-      console.error(err);
+  //     if (res.data.success) {
+  //       setMessage(`✅ Booking created! ID: ${res.data.bookingId}`);
+  //       setFormData({
+  //         guestId: "",
+  //         roomNumber: "",
+  //         bookingDate: "",
+  //         checkInDate: "",
+  //         checkoutDate: "",
+  //       });
+  //     } else {
+  //       setMessage(res.data.message || "Error creating booking");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     setMessage("❌ Error creating booking");
+  //   }
+  // };
+
+  const handleCreateBooking = async (e) => {
+  e.preventDefault();
+  setMessage(""); // Clear previous messages
+  
+  try {
+    const res = await axios.post("/frontdesk/api/booking/add", formData, {
+      headers: { "x-access-token": localStorage.getItem("token") },
+    });
+    
+    if (res.data.success) {
+      setMessage(`✅ Booking created! ID: ${res.data.bookingId}`);
+      setFormData({
+        guestId: "",
+        roomNumber: "",
+        bookingDate: "",
+        checkInDate: "",
+        checkoutDate: "",
+      });
+    } else {
+      setMessage(`❌ ${res.data.message || "Error creating booking"}`);
+    }
+  } catch (err) {
+    console.error("Frontend Error:", err);
+    if (err.response?.data?.message) {
+      setMessage(`❌ ${err.response.data.message}`);
+    } else if (err.response?.data?.error) {
+      setMessage(`❌ Database Error: ${err.response.data.error}`);
+    } else {
       setMessage("❌ Error creating booking");
     }
-  };
+  }
+};
 
   // ✅ Fetch Booking by ID
   const handleFetchBooking = async () => {

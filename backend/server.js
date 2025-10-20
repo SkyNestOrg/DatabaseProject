@@ -79,6 +79,10 @@ app.use("/frontdesk/fetch", FetchDetails); // ✅ CORRECT ROUTE
 import PaymentAndBill from "./routes/FrontDesk/Payement_and_Bill.js"; // includes makePayment, cancelPayment, view bills
 app.use("/frontdesk/api/payments", PaymentAndBill);
 
+// Search Guest Details
+import SearchGuestDetails from "./routes/FrontDesk/searchGuestDetails.js";
+app.use("/frontdesk/searchguestdetails", SearchGuestDetails);
+
 
 
 
