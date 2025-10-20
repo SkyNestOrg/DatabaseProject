@@ -29,7 +29,7 @@ function UpdateServiceTable() {
             
             const response = await axios.get('http://localhost:5000/updateservicetable', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'x-access-token': token
                 }
             });
 
@@ -78,7 +78,7 @@ function UpdateServiceTable() {
                 },
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'x-access-token': token
                     }
                 }
             );
@@ -116,7 +116,7 @@ function UpdateServiceTable() {
                 },
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'x-access-token': token
                     }
                 }
             );

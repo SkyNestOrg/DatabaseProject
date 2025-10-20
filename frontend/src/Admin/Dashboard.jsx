@@ -1,197 +1,285 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom'; // Import useNavigate and Outlet
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Layout from './components/Layout';
 
-function Dashboard() {
-  const [user, setUser] = useState(null);
+const Dashboard = () => {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    totalStaff: 0,
+    totalBranches: 0,
+    totalGuests: 0,
+    totalBookings: 0
+  });
+  const [recentLogs, setRecentLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize navigate function
-  
+
   useEffect(() => {
-    // Check if user is logged in
-    const userData = localStorage.getItem('user');
-    const authToken = localStorage.getItem('token');
-    
-    if (userData && authToken) {
-      setUser(JSON.parse(userData));
-    } else {
-      // Redirect to login if not authenticated
-      window.location.href = '/login';
-    }
-    setLoading(false);
+    fetchDashboardData();
   }, []);
 
-  const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    // Redirect to login
-    window.location.href = '/login';
-  };
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Fetch staff count
+      const staffResponse = await axios.get('/managestaff', {
+        headers: { 'x-access-token': token }
+      });
 
-  const handleMenuItemClick = (item) => {
-    if (item === "Admin Profile") {
-      // Navigate to guest profile page with guest_id parameter
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        window.location.href = `/admin-profile?username=${user.username}`;
+      // Fetch branches count
+      const branchesResponse = await axios.get('/managestaff/branches', {
+        headers: { 'x-access-token': token }
+      });
+
+      // Fetch guests count
+      const guestsResponse = await axios.get('/api/guests/count', {
+        headers: { 'x-access-token': token }
+      });
+
+      // Fetch bookings count
+      const bookingsResponse = await axios.get('/api/bookings/count', {
+        headers: { 'x-access-token': token }
+      });
+
+      // Fetch recent logs
+      const logsResponse = await axios.get('/viewlogs?limit=5', {
+        headers: { 'x-access-token': token }
+      });
+
+      setStats({
+        totalStaff: staffResponse.data.length,
+        totalBranches: branchesResponse.data.length,
+        totalGuests: guestsResponse.data.count || 0,
+        totalBookings: bookingsResponse.data.count || 0
+      });
+
+      setRecentLogs(logsResponse.data.logs || []);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      // Fallback to counting from available data
+      try {
+        const token = localStorage.getItem('token');
+        const staffResponse = await axios.get('/managestaff', {
+          headers: { 'x-access-token': token }
+        });
+        const branchesResponse = await axios.get('/managestaff/branches', {
+          headers: { 'x-access-token': token }
+        });
+
+        setStats(prev => ({
+          ...prev,
+          totalStaff: staffResponse.data.length,
+          totalBranches: branchesResponse.data.length
+        }));
+      } catch (fallbackError) {
+        console.error('Fallback data fetch failed:', fallbackError);
       }
-    }else if (item === "Add Discounts") {
-      navigate('/admin/add-discounts'); // Add other menu item handlers here as needed
-    }else if (item === "View Discounts") {
-      navigate('/admin/discounts'); // Add other menu item handlers here as needed
-    }else if (item === "Add Taxes") {
-      navigate('/admin/add-taxes');
-    }else if (item === "View Taxes") {
-      navigate('/admin/taxes');
-    }else if (item === "View Logs") {
-      navigate('/admin/logs');
-    }else if (item === "Manage Staff") {
-      navigate('/admin/manage-staff');
-
-  ;}
-}
-
-  const styles = {
-    dashboard: {
-      display: 'grid',
-      gridTemplateAreas: `
-        "header header"
-        "sidebar content"
-      `,
-      gridTemplateColumns: '220px 1fr',
-      gridTemplateRows: '70px 1fr',
-      height: '100vh',
-      fontFamily: 'Segoe UI, sans-serif',
-    },
-    header: {
-      gridArea: 'header',
-      backgroundColor: '#2c3e50',
-      color: 'white',
-      padding: '1rem 2rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      fontSize: '1.4rem',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-    },
-    userInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '1rem',
-      fontSize: '1rem',
-    },
-    logoutButton: {
-      background: 'transparent',
-      border: '1px solid white',
-      color: 'white',
-      padding: '0.5rem 1rem',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontSize: '0.9rem',
-    },
-    sidebar: {
-      gridArea: 'sidebar',
-      backgroundColor: '#34495e',
-      color: 'white',
-      padding: '2rem 1rem',
-      borderTopRightRadius: '12px',
-      boxShadow: '2px 0 6px rgba(0,0,0,0.2)',
-    },
-    sidebarList: {
-      listStyle: 'none',
-      padding: 0,
-      margin: 0,
-    },
-    sidebarItem: {
-      margin: '1rem 0',
-      cursor: 'pointer',
-      padding: '0.6rem 1rem',
-      borderRadius: '8px',
-      transition: 'background 0.3s',
-    },
-    content: {
-      gridArea: 'content',
-      padding: '2rem',
-      background: 'linear-gradient(135deg, #f6f9fc, #dbe9f4)',
-      borderTopLeftRadius: '12px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '1.5rem',
-      color: '#2c3e50',
-      fontWeight: 'bold',
-    },
-    loading: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      fontSize: '1.2rem',
-    },
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const menuItems = [
-    "Add Discounts",
-    "View Discounts",
-    "Add Taxes",
-    "View Taxes",
-    "View Logs",
-    "Manage Staff"
+  const handleQuickAction = (action) => {
+    switch (action) {
+      case 'registerStaff':
+        navigate('/admin/manage-staff/create');
+        break;
+      case 'createDiscount':
+        navigate('/admin/discounts');
+        break;
+      case 'manageTaxes':
+        navigate('/admin/taxes');
+        break;
+      case 'viewLogs':
+        navigate('/admin/logs');
+        break;
+      default:
+        break;
+    }
+  };
+
+  // If loading, show a loading spinner or message
+  if (loading) {
+    return (
+      <Layout>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+          <div>Loading dashboard...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Stats data for cards
+  const statsData = [
+    { title: 'Total Staff', value: stats.totalStaff, color: '#3498db' },
+    { title: 'Total Branches', value: stats.totalBranches, color: '#2ecc71' },
+    { title: 'Total Guests', value: stats.totalGuests, color: '#f39c12' },
+    { title: 'Total Bookings', value: stats.totalBookings, color: '#e74c3c' }
   ];
 
-  if (loading) {
-    return <div style={styles.loading}>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div style={styles.loading}>Redirecting to login...</div>;
-  }
+  // Helper to format date
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    return d.toLocaleString();
+  };
 
   return (
-    <div style={styles.dashboard}>
-      <header style={styles.header}>
-        <div> Admin Dashboard</div>
-        <div style={styles.userInfo}>
-          <span>Welcome, {user.username}!</span>
-          <button 
-            style={styles.logoutButton} 
-            onClick={handleLogout}
-            onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-          >
-            Logout
-          </button>
-        </div>
-      </header>
-
-      <nav style={styles.sidebar}>
-        <ul style={styles.sidebarList}>
-          {menuItems.map((item, index) => (
-            <li
-              key={index}
-              style={styles.sidebarItem}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = '#1abc9c')
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = 'transparent')
-              }
-              onClick={() => handleMenuItemClick(item)}
-            >
-              {item}
-            </li>
+    <Layout>
+      <div style={{ 
+        backgroundColor: 'white', 
+        padding: '25px', 
+        borderRadius: '10px',
+        marginBottom: '30px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        <h2 style={{ color: '#2c3e50', marginBottom: '15px' }}>Hotel Overview</h2>
+        <p style={{ color: '#7f8c8d', marginBottom: '20px' }}>
+          Welcome to SkyNest Hotels management system. Monitor and manage all hotel operations from this dashboard.
+        </p>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '20px',
+          marginTop: '30px'
+        }}>
+          {statsData.map((stat, index) => (
+            <div key={index} style={{
+              backgroundColor: stat.color,
+              color: 'white',
+              padding: '20px',
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{stat.value}</div>
+              <div style={{ fontSize: '14px', opacity: 0.9 }}>{stat.title}</div>
+            </div>
           ))}
-        </ul>
-      </nav>
+        </div>
+      </div>
 
-      <main style={styles.content}>
-        {/* Nested route outlet: admin child pages will render here */}
-        <Outlet />
-      </main>
-    </div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '30px'
+      }}>
+        <div style={{
+          backgroundColor: 'white',
+          padding: '25px',
+          borderRadius: '10px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h3 style={{ color: '#2c3e50', marginBottom: '15px' }}>Recent Activity</h3>
+          <div style={{ color: '#7f8c8d' }}>
+            {recentLogs.length > 0 ? (
+              recentLogs.map((log, index) => (
+                <div key={log.log_id} style={{ 
+                  marginBottom: '10px', 
+                  padding: '8px',
+                  borderLeft: '3px solid #3498db',
+                  backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white'
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                    {log.username} ({log.official_role})
+                  </div>
+                  <div style={{ fontSize: '12px' }}>{log.action}</div>
+                  <div style={{ fontSize: '11px', color: '#95a5a6', marginTop: '2px' }}>
+                    {formatDate(log.timestamp)} | {log.branch_name}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '20px', 
+                color: '#bdc3c7',
+                fontStyle: 'italic'
+              }}>
+                No recent activity found
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div style={{
+          backgroundColor: 'white',
+          padding: '25px',
+          borderRadius: '10px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h3 style={{ color: '#2c3e50', marginBottom: '15px' }}>Quick Actions</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <button 
+              onClick={() => handleQuickAction('registerStaff')}
+              style={{
+                padding: '12px',
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#2980b9'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#3498db'}
+            >
+              Register New Staff
+            </button>
+            <button 
+              onClick={() => handleQuickAction('createDiscount')}
+              style={{
+                padding: '12px',
+                backgroundColor: '#2ecc71',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#27ae60'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#2ecc71'}
+            >
+              Manage Discounts
+            </button>
+            <button 
+              onClick={() => handleQuickAction('manageTaxes')}
+              style={{
+                padding: '12px',
+                backgroundColor: '#f39c12',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#d35400'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#f39c12'}
+            >
+              Manage Taxes & Charges
+            </button>
+            <button 
+              onClick={() => handleQuickAction('viewLogs')}
+              style={{
+                padding: '12px',
+                backgroundColor: '#e74c3c',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#c0392b'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#e74c3c'}
+            >
+              View System Logs
+            </button>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
-}
+};
 
 export default Dashboard;

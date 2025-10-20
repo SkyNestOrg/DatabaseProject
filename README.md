@@ -8,18 +8,13 @@ SkyNest Hotels is a regional hotel chain in Sri Lanka, offering premium accommod
 
 ## Project Structure 
 
--**frontend**: Consists of interface for below mentioned roles in a common entry section:
-
 - **guest**: Frontend interface for hotel guests to search and book rooms,request services, view bills and many more functions .  
 - **frontdeskoffice-end**: Portal for front desk staff to manage check-ins, check-outs, guest bookings and handle payments.  
 - **serviceoffice-end**: Interface for managing guest service requests, updates, and service billing.  
 - **admin-end**: Admin dashboard for managing users, roles, and system configurations for app-wide tax and discounts.  
-- **management-end**: Management dashboard for generating reports, monitoring performance, and viewing analytics.
-
--**backend**:
- Node.js/Express-based server handling APIs, jwt authentication, and database interactions.  
-
--**database_files**: SQL files for creating schemas, inserting initial data, and defining functions, triggers, views, procedures, and indexes.  
+- **management-end**: Management dashboard for generating reports, monitoring performance, and viewing analytics.  
+- **backend**: Node.js/Express-based server handling APIs, jwt authentication, and database interactions.  
+- **database_files**: SQL files for creating schemas, inserting initial data, and defining functions, triggers, views, procedures, and indexes.  
 
 
 ### Built With
@@ -37,16 +32,44 @@ Before running the project, ensure all required dependencies are installed in th
     ```bash
     npm install
     ```
-2. **Install frontend Dependencies**:
-    Navigate to the `frontend` directory and install dependencies:
+2. **Install Guest-End Dependencies**:
+    Navigate to the `guest-end` directory and install dependencies:
     ```bash
-    cd frontend
+    cd guest-end
+    npm install
+    cd ..
+    ```
+3. **Install FrontDeskOffice-End Dependencies**:
+    Navigate to the `frontdeskoffice-end` directory and install dependencies:
+    ```bash
+    cd frontdeskoffice-end
+    npm install
+    cd ..
+    ```
+4. **Install ServiceOffice-End Dependencies**:
+    Navigate to the `serviceoffice-end` directory and install dependencies:
+    ```bash
+    cd serviceoffice-end
+    npm install
+    cd ..
+    ```
+5. **Install Admin-End Dependencies**:
+    Navigate to the `admin-end` directory and install dependencies:
+    ```bash
+    cd admin-end
     npm install
     cd ..
     ```
 
+6. **Install Management-End Dependencies**:
+    Navigate to the `management-end` directory and install dependencies:
+    ```bash
+    cd management-end
+    npm install
+    cd ..
+    ```
 
-3. **Install Backend Dependencies**:
+7. **Install Backend Dependencies**:
     Navigate to the `backend` directory and install dependencies:
     ```bash
     cd backend
@@ -59,44 +82,48 @@ Before running the project, ensure all required dependencies are installed in th
 
 ## Running the Application
 
-### Frontend 
-To start the React frontend server  on `localhost:5573`, use the following command from the root directory:
-
+### Guest 
+To start the React frontend server for Guest End on `localhost:5173`, use the following command from the root directory:
 ```bash
-cd frontend
-npm run dev
+npm run guest-end
 ```
+
+### Front Desk Office
+To start the Front Desk Office End frontend on `localhost:5473`, use the following command from the root directory:
+```bash
+npm run frontdeskoffice-end
+```
+
+### Admin
+To start the Admin End frontend on `localhost:5373`, use the following command from the root directory:
+```bash
+npm run admin-end
+```
+
+### Management
+To start the Admin End frontend on `localhost:5573`, use the following command from the root directory:
+```bash
+npm run management-end
+```
+
+### Service Office
+To start the Service Office End frontend on `localhost:5273`, use the following command from the root directory:
+```bash
+npm run serviceoffice-end
+```
+
 
 ### Backend
 To start the backend server on `localhost:5000`, use the following command from the root directory:
 ```bash
-cd backend
-npm run dev
+npm run backend
 ```
 
 ### All
-To start the both backend and frontend servers concurrently at once, use the following command from the root directory:
+To start the all servers concurrently at once, use the following command from the root directory:
 ```bash
 npm start
 ```
-
-## Containerization
-
-Navigate to root directory.
-To build and run the containers in detached mode:
-
-```bash
-docker compose -f docker-compose.dev.yml up -d
-```
-
-To stop running containers:
-
-```bash
-docker compose -f docker-compose.dev.yml down
-```
-
-
-
 
 ## Contributors
 - [Dinura Ginige](https://github.com/Dinurang)

@@ -17,7 +17,6 @@ const CurrentBookings = () => {
       const token = localStorage.getItem('token');
       const response = await axios.get('/currentbookings', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'x-access-token': token
         }
       });

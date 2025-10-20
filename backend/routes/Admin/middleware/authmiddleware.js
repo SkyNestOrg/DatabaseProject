@@ -1,44 +1,32 @@
-// middleware/authMiddleware.js
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-dotenv.config();
-
-const secretkey = process.env.JWT_SECRET;
 
 export const authenticateToken = (req, res, next) => {
-  // Check for token in multiple headers
-  let token = req.headers['x-access-token'];
+  const token = req.headers['x-access-token'];
   
-  // If not found in x-access-token, check Authorization header
   if (!token) {
-    const authHeader = req.headers['authorization'];
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.split(' ')[1];
-    }
-  }
- 
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Token not provided'
+    return res.status(401).json({ 
+      success: false, 
+      error: 'Access token required' 
     });
   }
 
-  jwt.verify(token, secretkey, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key', (err, decoded) => {
     if (err) {
-      console.error('Token verification error:', err.message); // Add logging
-      return res.status(403).json({
-        success: false,
-        message: 'Failed to authenticate token'
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Invalid or expired token' 
       });
     }
-   
-    req.user = {
-      username: decoded.username,
-      role: decoded.role,
-      branch: decoded.branch    ////////////think
-    };
-   
+    
+    // Check if user is admin
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Admin access required' 
+      });
+    }
+    
+    req.user = decoded;
     next();
   });
 };

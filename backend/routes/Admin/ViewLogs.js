@@ -1,124 +1,72 @@
 import express from 'express';
 import db from '../../db.js';
-import jwt from 'jsonwebtoken';
+import { authenticateToken } from './middleware/authmiddleware.js';
 
 const router = express.Router();
 
-// GET /stafflogs - Get all staff logs with filtering
-router.get('/', async (req, res) => {
-    try {
-        console.log('=== STAFF LOGS REQUEST RECEIVED ===');
-        
-        const token = req.headers.authorization?.split(' ')[1];
-        
-        if (!token) {
-            console.log('❌ No token provided');
-            return res.status(401).json({ 
-                success: false, 
-                message: 'No token provided' 
-            });
-        }
+// Get system logs - FIXED parameter binding
+router.get('/', authenticateToken, async (req, res) => {
+  try {
+    // Parse and validate pagination inputs
+    const pageRaw = req.query.page ?? 1;
+    const limitRaw = req.query.limit ?? 50;
+    const searchRaw = (req.query.search ?? '').toString();
 
-        // Verify token
-        let decoded;
-        try {
-            decoded = jwt.verify(token, process.env.JWT_SECRET);
-            console.log('✅ Token verified for user:', decoded.username);
-        } catch (jwtError) {
-            console.log('❌ JWT Error:', jwtError.message);
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Invalid token' 
-            });
-        }
+  let pageNum = parseInt(String(pageRaw), 10);
+  let limitNum = parseInt(String(limitRaw), 10);
+    if (!Number.isFinite(pageNum) || pageNum < 1) pageNum = 1;
+    if (!Number.isFinite(limitNum) || limitNum < 1) limitNum = 50;
+    // Optional upper bound to prevent huge scans
+    if (limitNum > 500) limitNum = 500;
 
-        // Get query parameters for filtering
-        const { date, startTime, endTime, username } = req.query;
-        
-        console.log('Filter parameters:', { date, startTime, endTime, username });
+    const offsetNum = (pageNum - 1) * limitNum;
 
-        // ✅ FIX: Filter out NULL values and handle potential issues
-        let query = `
-            SELECT log_id, username, timestamp, action 
-            FROM staff_logs 
-            WHERE username IS NOT NULL 
-            AND timestamp IS NOT NULL 
-            AND action IS NOT NULL
-        `;
-        let queryParams = [];
+    console.log('Fetching logs with params:', { page: pageNum, limit: limitNum, search: searchRaw, offset: offsetNum });
 
-        // Filter by date
-        if (date) {
-            query += ' AND DATE(timestamp) = ?';
-            queryParams.push(date);
-            console.log('Adding date filter:', date);
-        }
+    let whereClause = '';
+  const params = [];
 
-        // Filter by username
-        if (username) {
-            query += ' AND username LIKE ?';
-            queryParams.push(`%${username}%`);
-            console.log('Adding username filter:', username);
-        }
-
-        // Filter by time range
-        if (startTime && endTime) {
-            query += ' AND TIME(timestamp) BETWEEN ? AND ?';
-            queryParams.push(startTime, endTime);
-            console.log('Adding time range filter:', startTime, 'to', endTime);
-        } else if (startTime) {
-            query += ' AND TIME(timestamp) >= ?';
-            queryParams.push(startTime);
-            console.log('Adding start time filter:', startTime);
-        } else if (endTime) {
-            query += ' AND TIME(timestamp) <= ?';
-            queryParams.push(endTime);
-            console.log('Adding end time filter:', endTime);
-        }
-
-        // Add ordering
-        query += ' ORDER BY timestamp DESC';
-        console.log('Final query:', query);
-        console.log('Query parameters:', queryParams);
-
-        // Execute query
-        const [logs] = await db.query(query, queryParams);
-
-        console.log('✅ Found staff logs:', logs.length);
-        if (logs.length > 0) {
-            console.log('Sample log:', logs[0]);
-        }
-
-        res.status(200).json({
-            success: true,
-            data: logs
-        });
-
-    } catch (error) {
-        console.error('❌ Error fetching staff logs:', error);
-        console.error('Error stack:', error.stack);
-        
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Invalid token' 
-            });
-        }
-        
-        // Check if it's a database error
-        if (error.code === 'ER_NO_SUCH_TABLE') {
-            return res.status(500).json({ 
-                success: false, 
-                message: 'Staff logs table does not exist in database'
-            });
-        }
-        
-        res.status(500).json({ 
-            success: false, 
-            message: 'Server error while fetching staff logs',
-            error: error.message 
-        });
+    const search = searchRaw.trim();
+    if (search) {
+      whereClause = 'WHERE username LIKE ? OR action LIKE ? OR branch_name LIKE ? OR official_role LIKE ?';
+      const like = `%${search}%`;
+      params.push(like, like, like, like);
     }
+
+    // Count query
+    const countQuery = whereClause
+      ? `SELECT COUNT(*) as total FROM staff_logs_detailed ${whereClause}`
+      : `SELECT COUNT(*) as total FROM staff_logs_detailed`;
+
+    const [countRows] = await db.query(countQuery, params);
+    const total = (countRows[0] && countRows[0].total) ? Number(countRows[0].total) : 0;
+
+    // Data query: interpolate validated integers for LIMIT/OFFSET; keep text params bound
+    const dataQuery = `
+      SELECT *
+      FROM staff_logs_detailed
+      ${whereClause}
+      ORDER BY \`timestamp\` DESC
+      LIMIT ${limitNum} OFFSET ${offsetNum}
+    `;
+
+    console.log('Executing data query:', dataQuery.trim());
+    console.log('With parameters:', params);
+
+    const [logs] = await db.query(dataQuery, params);
+
+    console.log(`Found ${logs.length} logs out of ${total} total`);
+
+    res.json({
+      logs,
+      total,
+      page: pageNum,
+      totalPages: limitNum ? Math.ceil(total / limitNum) : 0
+    });
+  } catch (error) {
+    console.error('Logs fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch logs: ' + error.message });
+  }
 });
 
 export default router;

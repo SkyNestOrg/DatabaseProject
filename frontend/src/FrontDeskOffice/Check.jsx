@@ -180,7 +180,6 @@ function Check() {
             
             const response = await axios.get('http://localhost:5000/frontdesk/fetch', {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'x-access-token': token
                 }
             });
@@ -225,7 +224,6 @@ function Check() {
                 `http://localhost:5000/frontdesk/fetch/${searchBookingId}`,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'x-access-token': token
                     }
                 }
@@ -269,7 +267,6 @@ function Check() {
                 { booking_id: bookingId }, 
                 {
                     headers: { 
-                        'Authorization': `Bearer ${token}`,
                         'x-access-token': token 
                     }
                 }
@@ -323,7 +320,6 @@ function Check() {
                 {}, 
                 {
                     headers: { 
-                        'Authorization': `Bearer ${token}`,
                         'x-access-token': token 
                     }
                 }

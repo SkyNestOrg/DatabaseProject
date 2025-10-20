@@ -32,7 +32,6 @@ const Service = () => {
         console.log('Making request to verify token...');
         const response = await axios.get("http://localhost:5000/tokenauth/verify", {
           headers: { 
-            'Authorization': `Bearer ${token}`,
             'x-access-token': token
           }
         });
@@ -60,7 +59,6 @@ const Service = () => {
       try {
         const config = {
           headers: { 
-            'Authorization': `Bearer ${token}`,
             'x-access-token': token
           }
         };
@@ -109,7 +107,6 @@ const Service = () => {
       const token = localStorage.getItem('token');
       const config = {
         headers: { 
-          'Authorization': `Bearer ${token}`,
           'x-access-token': token
         }
       };

@@ -2105,3 +2105,4 @@ BEGIN
 END//
 
 DELIMITER ;
+-- ✅ All functions recreated successfully (Linux & MySQL-compatible)

@@ -38,7 +38,6 @@ function SearchGuestDetails() {
       const token = localStorage.getItem('token');
       const response = await axios.get(`/frontdesk/fetch/${bookingId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'x-access-token': token
         }
       });

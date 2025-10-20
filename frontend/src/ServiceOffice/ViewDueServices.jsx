@@ -22,7 +22,7 @@ function ViewDueServices() {
             
             const response = await axios.get('http://localhost:5000/viewdueservices', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'x-access-token': token
                 }
             });
 
@@ -60,7 +60,7 @@ function ViewDueServices() {
                 {},
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'x-access-token': token
                     }
                 }
             );
