@@ -1,3 +1,51 @@
+DELIMITER $$
+
+CREATE TRIGGER after_payment_insert
+AFTER INSERT ON payment
+FOR EACH ROW
+BEGIN
+    UPDATE bill
+    SET due_amount = due_amount - NEW.paid_amount,
+        bill_status = CASE 
+                         WHEN (due_amount - NEW.paid_amount) <= 0 THEN 'paid'
+                         ELSE bill_status 
+                      END
+    WHERE bill_id = NEW.bill_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER before_bill_update
+BEFORE UPDATE ON bill
+FOR EACH ROW
+BEGIN
+    DECLARE v_tax_rate DECIMAL(5,2);
+    
+    -- Only recalculate if sub_total changes
+    IF NEW.sub_total != OLD.sub_total THEN
+        -- Get the latest tax percentage from your view
+        SELECT latest_tax_percentage INTO v_tax_rate
+        FROM latest_tax_percentage
+        LIMIT 1;
+        
+        -- Calculate tax_amount based on new sub_total
+        SET NEW.tax_amount = NEW.sub_total * (v_tax_rate / 100);
+        
+        -- Recalculate grand_total
+        SET NEW.grand_total = NEW.sub_total + NEW.tax_amount;
+        
+        -- Update due_amount proportionally if needed
+        IF NEW.due_amount = OLD.grand_total THEN
+            SET NEW.due_amount = NEW.grand_total;
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
 
 -- Trigger to log staff modifications
 
