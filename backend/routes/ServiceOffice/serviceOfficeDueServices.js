@@ -15,6 +15,7 @@ export const getDueService = async (req, res) => {
     const [rows] = await db.query(
       `SELECT
             sr.service_request_id,
+            sr.booking_id,
             sr.request_type,
             sr.status,
             sr.room_number,
@@ -29,7 +30,7 @@ export const getDueService = async (req, res) => {
             WHERE sr.status = ? AND sr.branch_id = ?`,
       [SERVICE_STATUS.PENDING, branchId]
     );
-    res.json(rows);
+    res.json({ requests: rows });
   } catch (error) {
     console.log("Error Fetching Due Services:", error);
     res.status(500).json({ message: "Server Error" });

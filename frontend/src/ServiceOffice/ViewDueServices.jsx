@@ -69,12 +69,12 @@ function ViewDueServices() {
                 }
             );
 
-            if (response.data.success) {
-                showToast('Service marked as completed successfully!', 'success');
-                fetchRequests(); // Refresh the list
-            } else {
-                showToast(response.data.message || 'Failed to complete service', 'error');
-            }
+            // Remove the completed request from the list immediately
+            setRequests(prevRequests => 
+                prevRequests.filter(req => req.service_request_id !== selectedRequest.service_request_id)
+            );
+            
+            showToast('Service marked as completed successfully!', 'success');
         } catch (error) {
             console.error('Error completing service:', error);
             showToast(error.response?.data?.message || 'Failed to complete service', 'error');
