@@ -1,5 +1,37 @@
 import db from "../../db.js";
 
+// GET /service-types - Get unique service types for the logged-in staff's branch (for filters)
+export const getServiceTypes = async (req, res) => {
+  console.log("GET /service-types received for branch:", req.user.branch_id);
+
+  try {
+    const [rows] = await db.query(
+      `SELECT DISTINCT service_type 
+       FROM service 
+       WHERE branch_id = ? 
+       ORDER BY service_type`,
+      [req.user.branch_id]
+    );
+
+    // Extract just the service type strings into an array
+    const serviceTypes = rows.map(row => row.service_type);
+
+    res.status(200).json({
+      success: true,
+      message: "Service types retrieved successfully",
+      serviceTypes: serviceTypes,
+      branch_id: req.user.branch_id,
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error while retrieving service types",
+      error: err.message,
+    });
+  }
+};
+
 // GET /services - Get all services for the logged-in staff's branch
 export const getServices = async (req, res) => {
   console.log("GET /services received for branch:", req.user.branch_id);

@@ -36,7 +36,7 @@ import ManageStaffEdit from "./Admin/ManageStaffEdit.jsx";
 // Service Office
 import ServiceOfficeDashboard from "./ServiceOffice/Dashboard.jsx";
 import ServiceOfficeDueServices from "./ServiceOffice/ViewDueServices.jsx";
-import ServiceOfficeServiceHistory from "./ServiceOffice/ViewPastServices.jsx";
+import ServiceOfficeServiceHistory from "./ServiceOffice/ViewServiceHistory.jsx";
 import ServiceOfficeServiceManagement from "./ServiceOffice/UpdateServiceTable.jsx";
 
 // FrontDesk office

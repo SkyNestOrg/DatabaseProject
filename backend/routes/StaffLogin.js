@@ -39,7 +39,16 @@ router.post('/', async (req, res) => {
       else if (rawRole.includes('service')) role = 'serviceoffice';
 
       const secret = process.env.JWT_SECRET || 'dev-secret-key';
-      const token = jwt.sign({ username: user.username, role }, secret, { expiresIn: '1h' });
+      const token = jwt.sign(
+        {
+          username: user.username,
+          role,
+          branch_id: user.branch_id,
+          staff_id: user.staff_id,
+        },
+        secret,
+        { expiresIn: "1h" }
+      );
 
       return res.status(200).json({
         success: true,

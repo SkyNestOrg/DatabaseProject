@@ -27,18 +27,14 @@ function UpdateServiceTable() {
             setLoading(true);
             const token = localStorage.getItem('token');
             
-            const response = await axios.get('http://localhost:5000/updateservicetable', {
+            const response = await axios.get('http://localhost:5000/serviceoffice/services', {
                 headers: {
-                    'x-access-token': token
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
-            if (response.data.success) {
-                setServices(response.data.data);
-                setError('');
-            } else {
-                setError(response.data.message || 'Failed to fetch services');
-            }
+            setServices(response.data.services || []);
+            setError('');
         } catch (error) {
             console.error('Error fetching services:', error);
             if (error.response?.status === 401) {
@@ -49,6 +45,7 @@ function UpdateServiceTable() {
             } else {
                 setError(error.response?.data?.message || 'Failed to load services');
             }
+            setServices([]);
         } finally {
             setLoading(false);
         }
@@ -71,14 +68,14 @@ function UpdateServiceTable() {
             const token = localStorage.getItem('token');
             
             const response = await axios.put(
-                `http://localhost:5000/updateservicetable/${editingService.service_type}`,
+                `http://localhost:5000/serviceoffice/services/${editingService.service_type}`,
                 {
                     unit_quantity_charges: parseFloat(editingService.unit_quantity_charges),
                     availability: editingService.availability
                 },
                 {
                     headers: {
-                        'x-access-token': token
+                        'Authorization': `Bearer ${token}`
                     }
                 }
             );
@@ -108,7 +105,7 @@ function UpdateServiceTable() {
             const token = localStorage.getItem('token');
             
             const response = await axios.post(
-                'http://localhost:5000/updateservicetable',
+                'http://localhost:5000/serviceoffice/services',
                 {
                     service_type: newService.service_type,
                     unit_quantity_charges: parseFloat(newService.unit_quantity_charges),
@@ -116,7 +113,7 @@ function UpdateServiceTable() {
                 },
                 {
                     headers: {
-                        'x-access-token': token
+                        'Authorization': `Bearer ${token}`
                     }
                 }
             );
@@ -230,7 +227,7 @@ function UpdateServiceTable() {
             <div style={styles.servicesSection}>
                 <h2 style={styles.sectionTitle}>Existing Services</h2>
                 
-                {services.length === 0 ? (
+                {!services || services.length === 0 ? (
                     <div style={styles.noServices}>
                         <h3>No services found</h3>
                         <p>Add your first service using the form above.</p>
@@ -324,37 +321,6 @@ function UpdateServiceTable() {
                     </div>
                 )}
             </div>
-
-            <style jsx>{`
-                @media (max-width: 768px) {
-                    .container {
-                        padding: 1rem !important;
-                    }
-                    
-                    .header {
-                        flex-direction: column !important;
-                        gap: 1rem !important;
-                        text-align: center !important;
-                    }
-                    
-                    .form {
-                        flex-direction: column !important;
-                    }
-                    
-                    .formGroup {
-                        margin-right: 0 !important;
-                        margin-bottom: 1rem !important;
-                    }
-                    
-                    .tableContainer {
-                        overflow-x: auto !important;
-                    }
-                    
-                    .table {
-                        min-width: 500px !important;
-                    }
-                }
-            `}</style>
         </div>
     );
 }

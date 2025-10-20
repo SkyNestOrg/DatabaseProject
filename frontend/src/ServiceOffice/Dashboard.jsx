@@ -1,24 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import axios from 'axios';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Initialize navigate function
-  
+  const [stats, setStats] = useState({
+    totalRequests: 0,
+    completedServices: 0,
+    pendingServices: 0,
+    cancelledServices: 0
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Check if user is logged in
     const userData = localStorage.getItem('user');
     const authToken = localStorage.getItem('token');
-    
+
     if (userData && authToken) {
       setUser(JSON.parse(userData));
+      fetchDashboardStats();
     } else {
-      // Redirect to login if not authenticated
       window.location.href = '/login';
     }
-    setLoading(false);
   }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/serviceoffice/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data) {
+        setStats({
+          totalRequests: response.data.totalRequests || 0,
+          completedServices: response.data.completedServices || 0,
+          pendingServices: response.data.pendingServices || 0,
+          cancelledServices: response.data.cancelledServices || 0
+        });
+        setError('');
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard stats:', err);
+      setError('Failed to load dashboard statistics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     // Clear authentication data
@@ -29,20 +61,18 @@ function Dashboard() {
   };
 
   const handleMenuItemClick = (item) => {
-    if (item === "ServiceOffice Profile") {
-      // Navigate to guest profile page with guest_id parameter
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        window.location.href = `/serviceoffice-profile?username=${user.username}`;
-      }
-    }else if (item === "View Due Services") {
-    navigate('/service/due');
-    }else if (item === "View Past Services") {
-    navigate('/service/history');
-    }else if (item === "Update Service Table") {
-    navigate('/service/manage');
+    if (item === "View Due Services") {
+      navigate('/service/due');
+    } else if (item === "View Service History") {
+      navigate('/service/history');
+    } else if (item === "Update Service Table") {
+      navigate('/service/manage');
     }
+  };
+
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchDashboardStats();
   };
 
   const styles = {
@@ -127,7 +157,7 @@ function Dashboard() {
 
   const menuItems = [
     "View Due Services",
-    "View Past Services",
+    "View Service History",
     "Update Service Table"
   ];
 
@@ -177,9 +207,97 @@ function Dashboard() {
       </nav>
 
       <main style={styles.content}>
-        <div>Welcome to SkyNest HRGSMS ServiceOffice Portal</div>
-        <div style={{ fontSize: '1rem', marginTop: '1rem', fontWeight: 'normal' }}>
-        ServiceOffice User: {user.username}
+        {error && (
+          <div style={{
+            color: '#e74c3c',
+            backgroundColor: '#fadbd8',
+            padding: '1rem',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            width: '100%',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
+        
+        <div style={{ width: '100%', maxWidth: '1200px' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem'
+          }}>
+            <h2 style={{ fontSize: '1.8rem', margin: 0 }}>Dashboard Statistics</h2>
+            <button
+              onClick={handleRefresh}
+              style={{
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                padding: '0.6rem 1.2rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: 'bold'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#2980b9'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#3498db'}
+            >
+              Refresh
+            </button>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '1.5rem',
+            width: '100%'
+          }}>
+            <div style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              borderLeft: '4px solid #3498db'
+            }}>
+              <h3 style={{ margin: '0 0 0.5rem 0', color: '#7f8c8d', fontSize: '0.9rem' }}>Total Requests</h3>
+              <p style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold', color: '#2c3e50' }}>{stats.totalRequests}</p>
+            </div>
+
+            <div style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              borderLeft: '4px solid #27ae60'
+            }}>
+              <h3 style={{ margin: '0 0 0.5rem 0', color: '#7f8c8d', fontSize: '0.9rem' }}>Completed Services</h3>
+              <p style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold', color: '#27ae60' }}>{stats.completedServices}</p>
+            </div>
+
+            <div style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              borderLeft: '4px solid #f39c12'
+            }}>
+              <h3 style={{ margin: '0 0 0.5rem 0', color: '#7f8c8d', fontSize: '0.9rem' }}>Pending Services</h3>
+              <p style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold', color: '#f39c12' }}>{stats.pendingServices}</p>
+            </div>
+
+            <div style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              borderLeft: '4px solid #e74c3c'
+            }}>
+              <h3 style={{ margin: '0 0 0.5rem 0', color: '#7f8c8d', fontSize: '0.9rem' }}>Cancelled Services</h3>
+              <p style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold', color: '#e74c3c' }}>{stats.cancelledServices}</p>
+            </div>
+          </div>
         </div>
       </main>
     </div>

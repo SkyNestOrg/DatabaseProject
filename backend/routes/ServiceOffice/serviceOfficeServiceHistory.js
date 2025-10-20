@@ -22,6 +22,7 @@ export const getServiceHistory = async (req, res) => {
     let sql = `
             SELECT
                 sr.service_request_id,
+                sr.booking_id,
                 sr.request_type,
                 sr.status,
                 sr.room_number,
@@ -69,6 +70,8 @@ export const getServiceHistory = async (req, res) => {
     // Lets run the query
     const [rows] = await db.query(sql, params);
     console.log("Service History Results:", rows);
+    console.log("First row booking_id:", rows[0]?.booking_id);
+    console.log("First row full data:", JSON.stringify(rows[0], null, 2));
 
     // lets get total count for pagination
     const totalRecords = rows.length > 0 ? rows[0].total_count : 0;

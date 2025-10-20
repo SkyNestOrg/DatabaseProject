@@ -14,7 +14,7 @@ export const authenticateToken = (req, res, next) => {
 
   // If not found in x-access-token, check Authorization header
   if (!token) {
-    const authHeader = req.headers["authorization"];
+     const authHeader = req.headers['x-access-token'] || req.headers['authorization'];
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
     }

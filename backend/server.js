@@ -45,7 +45,7 @@ app.use("/bill", GuestViewBill);
 
 //service office routes
 import serviceOfficeRoutes from "./routes/ServiceOffice/serviceOfficeRoutes.js";
-app.use("/service", serviceOfficeRoutes); // all routes in serviceOfficeRoutes will be prefixed with /service
+app.use("/serviceoffice", serviceOfficeRoutes); // all routes in serviceOfficeRoutes will be prefixed with /service
 
 //front desk office routes
 // import FrontOfficeLogin from "./routes/FrontDesk/FrontOfficeLogin.js";
@@ -115,22 +115,22 @@ app.use("/report5", Report5);
   
 
 
-//admin routes
-// Add these imports (they might already exist, but ensure they point to your new files)
-import ManageStaff from "./routes/Admin/ManageStaff.js";
-import ViewDiscounts from "./routes/Admin/ViewDiscounts.js";
-import AddDiscounts from "./routes/Admin/AddDiscounts.js";
-import ViewTaxes from "./routes/Admin/ViewTaxes.js";
-import AddTaxes from "./routes/Admin/AddTaxes.js";
-import ViewLogs from "./routes/Admin/ViewLogs.js";
+// //admin routes
+// // Add these imports (they might already exist, but ensure they point to your new files)
+// import ManageStaff from "./routes/Admin/ManageStaff.js";
+// import ViewDiscounts from "./routes/Admin/ViewDiscounts.js";
+// import AddDiscounts from "./routes/Admin/AddDiscounts.js";
+// import ViewTaxes from "./routes/Admin/ViewTaxes.js";
+// import AddTaxes from "./routes/Admin/AddTaxes.js";
+// import ViewLogs from "./routes/Admin/ViewLogs.js";
 
-// These routes should already exist, but they'll now use your enhanced versions
-app.use("/managestaff", ManageStaff);
-app.use("/viewdiscounts", ViewDiscounts);
-app.use("/adddiscounts", AddDiscounts);
-app.use("/viewtaxes", ViewTaxes);
-app.use("/addtaxes", AddTaxes);
-app.use("/viewlogs", ViewLogs);
+// // These routes should already exist, but they'll now use your enhanced versions
+// app.use("/managestaff", ManageStaff);
+// app.use("/viewdiscounts", ViewDiscounts);
+// app.use("/adddiscounts", AddDiscounts);
+// app.use("/viewtaxes", ViewTaxes);
+// app.use("/addtaxes", AddTaxes);
+// app.use("/viewlogs", ViewLogs);
 
 
 

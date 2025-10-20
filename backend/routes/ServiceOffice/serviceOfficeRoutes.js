@@ -10,6 +10,7 @@ import {
   addService,
   updateService,
   deleteService,
+  getServiceTypes,
 } from "./serviceManagement.js";
 
 const router = express.Router();
@@ -23,6 +24,7 @@ router.put("/requests/:id", authenticateToken, updateServiceStatus); // update s
 router.get("/history", authenticateToken, getServiceHistory); // to fetch all the past service history
 
 // Service Management Routes
+router.get("/service-types", authenticateToken, getServiceTypes); // get unique service types for the branch (for filters)
 router.get("/services", authenticateToken, getServices); // get all services for the branch
 router.post("/services", authenticateToken, addService); // add new service to the branch
 router.put("/services/:serviceType", authenticateToken, updateService); // update existing service

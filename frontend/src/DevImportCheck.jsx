@@ -36,7 +36,7 @@ const MODULES = [
   // Service Office
   './ServiceOffice/Dashboard.jsx',
   './ServiceOffice/ViewDueServices.jsx',
-  './ServiceOffice/ViewPastServices.jsx',
+  './ServiceOffice/ViewServiceHistory.jsx',
   './ServiceOffice/UpdateServiceTable.jsx',
 
   // FrontDesk
