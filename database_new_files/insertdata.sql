@@ -69,7 +69,7 @@ INSERT INTO staff_user (username, password, official_role, branch_id) VALUES
 ('AD001', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'admin-user', 1),
 ('FO001', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'frontoffice-user', 1),
 ('FO002', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'frontoffice-user', 2),
-('FO003', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO.', 'frontoffice-user', 3),
+('FO003', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'frontoffice-user', 3),
 ('MN001', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'management-user', 1),
 ('SO001', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'serviceoffice-user', 1),
 ('SO002', '$2a$12$FSzBjTcT9VNktXGcHFuVD.II2V75rB33/pprjByOXFC5du90U5lwO', 'serviceoffice-user', 2),

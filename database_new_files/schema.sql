@@ -169,3 +169,5 @@ CREATE TABLE `Taxes_and_Charges` (
   CONSTRAINT chk_tax CHECK (`latest_tax_percentage` BETWEEN 0 AND 100),
   CONSTRAINT chk_surcharge CHECK (`latest_surcharge_percentage` BETWEEN 0 AND 100)
 );
+
+ALTER TABLE staff_logs MODIFY action VARCHAR(500);
