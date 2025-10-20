@@ -2,7 +2,7 @@
 // Centralized constants and enums for service office backend
 
 export const SERVICE_STATUS = {
-  PENDING: "pending",
+  PENDING: "Request Placed",
   COMPLETED: "completed",
   CANCELLED: "cancelled",
 };
