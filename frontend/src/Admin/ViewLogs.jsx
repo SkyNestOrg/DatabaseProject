@@ -15,11 +15,20 @@ const ViewLogs = () => {
 
   useEffect(() => {
     fetchLogs();
-  }, [pagination.page, search]);
+  }, [pagination.page]);
+
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      setPagination(prev => ({ ...prev, page: 1 }));
+      fetchLogs();
+    }, 500);
+
+    return () => clearTimeout(delaySearch);
+  }, [search]);
 
   const fetchLogs = async () => {
     try {
-      setLoading(true);
+      // Don't show loading spinner, just fetch in background
       setError('');
       const token = localStorage.getItem('token');
       const response = await axios.get('/viewlogs', {
@@ -38,18 +47,17 @@ const ViewLogs = () => {
         totalPages: response.data.totalPages,
         total: response.data.total
       }));
+      setLoading(false);
     } catch (error) {
       console.error('Failed to fetch logs:', error);
       setError('Failed to load system logs: ' + (error.response?.data?.error || error.message));
       setLogs([]);
-    } finally {
       setLoading(false);
     }
   };
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
-    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const formatDate = (dateString) => {
