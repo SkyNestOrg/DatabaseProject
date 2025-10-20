@@ -61,18 +61,21 @@ Before running the project, ensure all required dependencies are installed in th
 
 ### Frontend 
 To start the React frontend server  on `localhost:5573`, use the following command from the root directory:
+
 ```bash
-npm run frontend
+cd frontend
+npm run dev
 ```
 
 ### Backend
 To start the backend server on `localhost:5000`, use the following command from the root directory:
 ```bash
-npm run backend
+cd backend
+npm run dev
 ```
 
 ### All
-To start the all servers concurrently at once, use the following command from the root directory:
+To start the both backend and frontend servers concurrently at once, use the following command from the root directory:
 ```bash
 npm start
 ```
