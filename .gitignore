@@ -5,6 +5,7 @@ serviceoffice-end/node_modules/
 guest-end/node_modules/
 management-end/node_modules/
 frontdeskoffice-end/node_modules/
+frontend/node_modules/
 
 # Environment
 .env
