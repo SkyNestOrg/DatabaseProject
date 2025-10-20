@@ -34,7 +34,7 @@ function ViewPastServices() {
 
             const response = await axios.get(`http://localhost:5000/viewpastservices?${params}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'x-access-token': token
                 }
             });
 
@@ -64,7 +64,7 @@ function ViewPastServices() {
             const token = localStorage.getItem('token');
             const response = await axios.get('http://localhost:5000/viewpastservices/rooms', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'x-access-token': token
                 }
             });
 

@@ -30,6 +30,8 @@ import AdminAddTaxes from "./Admin/AddTaxes.jsx";
 import AdminViewLogs from "./Admin/ViewLogs.jsx";
 import AdminAddDiscounts from "./Admin/AddDiscounts.jsx";
 import AdminViewTaxes from "./Admin/ViewTaxes.jsx";
+import ManageStaffCreate from "./Admin/ManageStaffCreate.jsx";
+import ManageStaffEdit from "./Admin/ManageStaffEdit.jsx";
 
 // Service Office
 import ServiceOfficeDashboard from "./ServiceOffice/Dashboard.jsx";
@@ -80,9 +82,13 @@ export default function AppRoutes() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/discounts" element={<AdminViewDiscounts />} />
         <Route path="/admin/add-discounts" element={<AdminAddDiscounts />} />
+        <Route path="/admin/add-discounts/:id" element={<AdminAddDiscounts />} />
         <Route path="/admin/taxes" element={<AdminViewTaxes />} />
         <Route path="/admin/add-taxes" element={<AdminAddTaxes />} />
+        <Route path="/admin/add-taxes/:id" element={<AdminAddTaxes />} />
         <Route path="/admin/manage-staff" element={<AdminManageStaff />} />
+        <Route path="/admin/manage-staff/create" element={<ManageStaffCreate />} />
+        <Route path="/admin/manage-staff/edit/:username" element={<ManageStaffEdit />} />
         <Route path="/admin/logs" element={<AdminViewLogs />} />
 
         {/* Service Office routes */}

@@ -242,7 +242,7 @@ router.get("/test", (req, res) => {
 router.get("/testdb", async (req, res) => {
   try {
     console.log("🧪 Testing database connection...");
-    const result = await db.query("SELECT 1 as test");
+    const [result] = await db.query("SELECT 1 as test");
     console.log("✅ Database connection successful!");
     res.json({ success: true, message: "Database connected", result });
   } catch (err) {

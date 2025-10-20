@@ -540,7 +540,6 @@ function SearchGuestDetails() {
       const token = localStorage.getItem('token');
       const response = await axios.post('/frontdesk/searchguestdetails', searchParams, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'x-access-token': token
         }
       });

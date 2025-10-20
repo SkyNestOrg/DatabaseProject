@@ -16,7 +16,6 @@ const ViewBills = () => {
       const token = localStorage.getItem('token');
       const response = await axios.get('/bill', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'x-access-token': token
         }
       });

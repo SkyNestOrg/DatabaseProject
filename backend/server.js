@@ -113,24 +113,27 @@ app.use("/report4", Report4);
 import Report5 from "./routes/Management/Report5.js";
 app.use("/report5", Report5);
   
-//admin routes
-import AdminLogin from "./routes/Admin/AdminLogin.js";
-app.use("/adminlogin", AdminLogin);
-import AdminTokenAuth from "./routes/Admin/AdminTokenAuth.js";
-app.use("/admintokenauth", AdminTokenAuth);
 
-import AddTaxes from "./routes/Admin/AddTaxes.js";
-app.use("/addtaxes", AddTaxes);
-import AddDiscounts from "./routes/Admin/AddDiscounts.js";
-app.use("/adddiscounts", AddDiscounts);
-import ViewDiscounts from "./routes/Admin/ViewDiscounts.js";
-app.use("/viewdiscounts", ViewDiscounts);
-import ViewTaxes from "./routes/Admin/ViewTaxes.js";
-app.use("/viewtaxes", ViewTaxes);
+
+//admin routes
+// Add these imports (they might already exist, but ensure they point to your new files)
 import ManageStaff from "./routes/Admin/ManageStaff.js";
-app.use("/managestaff", ManageStaff);
+import ViewDiscounts from "./routes/Admin/ViewDiscounts.js";
+import AddDiscounts from "./routes/Admin/AddDiscounts.js";
+import ViewTaxes from "./routes/Admin/ViewTaxes.js";
+import AddTaxes from "./routes/Admin/AddTaxes.js";
 import ViewLogs from "./routes/Admin/ViewLogs.js";
+
+// These routes should already exist, but they'll now use your enhanced versions
+app.use("/managestaff", ManageStaff);
+app.use("/viewdiscounts", ViewDiscounts);
+app.use("/adddiscounts", AddDiscounts);
+app.use("/viewtaxes", ViewTaxes);
+app.use("/addtaxes", AddTaxes);
 app.use("/viewlogs", ViewLogs);
+
+
+
 
 // Example route
 app.get("/", (req, res) => {

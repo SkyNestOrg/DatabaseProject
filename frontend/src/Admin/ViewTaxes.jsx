@@ -1,453 +1,186 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Layout from './components/Layout';
 
-function ViewTaxes() {
-    const [taxes, setTaxes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [user, setUser] = useState(null);
+const ViewTaxes = () => {
+  const [taxes, setTaxes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            setUser(JSON.parse(userData));
-        }
-        fetchTaxes();
-    }, []);
+  useEffect(() => {
+    fetchTaxes();
+  }, []);
 
-    const fetchTaxes = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-            
-            const response = await axios.get('http://localhost:5000/viewtaxes', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.data.success) {
-                setTaxes(response.data.data);
-                setError('');
-            } else {
-                setError(response.data.message || 'Failed to fetch taxes');
-            }
-        } catch (error) {
-            console.error('Error fetching taxes:', error);
-            if (error.response?.status === 401) {
-                setError('Session expired. Please login again.');
-                setTimeout(() => {
-                    window.location.href = '/adminlogin';
-                }, 2000);
-            } else {
-                setError(error.response?.data?.message || 'Failed to load taxes');
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteTax = async (revisionId) => {
-        if (!window.confirm('Are you sure you want to delete this future tax revision?')) {
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('token');
-            
-            console.log('=== FRONTEND DELETE DEBUG ===');
-            console.log('Deleting revision ID:', revisionId);
-            
-            // ✅ Simple - just send the revision_id
-            const response = await axios.delete(
-                `http://localhost:5000/viewtaxes/${revisionId}`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                }
-            );
-
-            console.log('Backend response:', response.data);
-            
-            if (response.data.success) {
-                alert('Future tax revision deleted successfully!');
-                fetchTaxes();
-            } else {
-                alert(response.data.message || 'Failed to delete tax entry');
-            }
-        } catch (error) {
-            console.error('Error deleting tax:', error);
-            console.log('Error response:', error.response?.data);
-            alert(error.response?.data?.message || 'Failed to delete tax entry');
-        }
-    };
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
-
-    const getTaxStatus = (revisionDate, index) => {
-        const today = new Date();
-        const revision = new Date(revisionDate);
-        
-        if (revision <= today) {
-            // Only the most recent past/current date should be "Current"
-            const pastTaxes = taxes.filter(tax => new Date(tax.revision_date) <= today);
-            const isMostRecentPast = pastTaxes.length > 0 && 
-                                   new Date(pastTaxes[0].revision_date).getTime() === revision.getTime();
-            
-            return isMostRecentPast ? 'Current' : 'Past';
-        } else {
-            return 'Future Revision';
-        }
-    };
-
-    const getCurrentTax = () => {
-        const today = new Date();
-        const currentTax = taxes.find(tax => new Date(tax.revision_date) <= today);
-        return currentTax || (taxes.length > 0 ? taxes[0] : null);
-    };
-
-    const currentTax = getCurrentTax();
-
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading">Loading taxes...</div>
-            </div>
-        );
+  const fetchTaxes = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/viewtaxes', {
+        headers: { 'x-access-token': token }
+      });
+      setTaxes(response.data);
+    } catch (error) {
+      console.error('Failed to fetch taxes:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  const deleteTax = async (id) => {
+    if (window.confirm('Are you sure you want to delete this tax revision?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`/addtaxes/${id}`, {
+          headers: { 'x-access-token': token }
+        });
+        fetchTaxes();
+      } catch (error) {
+        alert('Failed to delete tax revision');
+      }
+    }
+  };
+
+  const isCurrentTax = (tax) => {
+    const latestTax = taxes[0]; // Assuming sorted by date DESC
+    return latestTax && tax.revision_id === latestTax.revision_id;
+  };
+
+  if (loading) {
     return (
-        <div className="view-taxes-container">
-            <div className="header">
-                <h1>Taxes & Charges Management</h1>
-                <button onClick={fetchTaxes} className="refresh-btn">
-                    Refresh
-                </button>
-            </div>
-
-            {error && (
-                <div className="error-message">
-                    {error}
-                </div>
-            )}
-
-            <div className="stats">
-                <div className="stat-card">
-                    <h3>Total Tax Entries</h3>
-                    <p>{taxes.length}</p>
-                </div>
-                <div className="stat-card">
-                    <h3>Current Tax Rate</h3>
-                    <p>
-                        {currentTax ? 
-                            `${currentTax.latest_tax_percentage}%` : 
-                            'N/A'
-                        }
-                    </p>
-                </div>
-                <div className="stat-card">
-                    <h3>Current Surcharge</h3>
-                    <p>
-                        {currentTax ? 
-                            `${currentTax.latest_surcharge_percentage}%` : 
-                            'N/A'
-                        }
-                    </p>
-                </div>
-            </div>
-
-            {taxes.length === 0 ? (
-                <div className="no-taxes">
-                    <h3>No tax entries found</h3>
-                    <p>There are no tax entries configured in the system.</p>
-                </div>
-            ) : (
-                <div className="table-container">
-                    <table className="taxes-table">
-                        <thead>
-                            <tr>
-                                <th>Revision Date</th>
-                                <th>Tax Percentage</th>
-                                <th>Surcharge Percentage</th>
-                                <th>Total Charge</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {taxes.map((tax, index) => {
-                                const status = getTaxStatus(tax.revision_date, index);
-                                const canDelete = status === 'Future Revision';
-                                
-                                return (
-                                    <tr key={tax.revision_id}>
-                                        <td className="revision-date">{formatDate(tax.revision_date)}</td>
-                                        <td className="tax-percentage">{tax.latest_tax_percentage}%</td>
-                                        <td className="surcharge-percentage">{tax.latest_surcharge_percentage}%</td>
-                                        <td className="total-charge">
-                                            {parseFloat(tax.latest_tax_percentage) + parseFloat(tax.latest_surcharge_percentage)}%
-                                        </td>
-                                        <td>
-                                            <span className={`status-badge ${
-                                                status === 'Current' ? 'current' : 
-                                                status === 'Past' ? 'past' : 'future'
-                                            }`}>
-                                                {status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {canDelete ? (
-                                                <button
-                                                    onClick={() => handleDeleteTax(tax.revision_id)}
-                                                    className="delete-btn"
-                                                    title="Delete Future Revision"
-                                                >
-                                                    Delete
-                                                </button>
-                                            ) : (
-                                                <span className="no-action">-</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* CSS remains the same */}
-            <style jsx>{`
-                .view-taxes-container {
-                    padding: 2rem;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    min-height: 100vh;
-                }
-
-                .header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 2rem;
-                    padding-bottom: 1rem;
-                    border-bottom: 2px solid rgba(255,255,255,0.3);
-                }
-
-                .header h1 {
-                    color: white;
-                    margin: 0;
-                }
-
-                .refresh-btn {
-                    background: rgba(255,255,255,0.2);
-                    color: white;
-                    border: 1px solid rgba(255,255,255,0.3);
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    transition: all 0.3s ease;
-                }
-
-                .refresh-btn:hover {
-                    background: rgba(255,255,255,0.3);
-                }
-
-                .error-message {
-                    background: #f8d7da;
-                    color: #721c24;
-                    padding: 1rem;
-                    border-radius: 6px;
-                    margin-bottom: 1rem;
-                    border: 1px solid #f5c6cb;
-                }
-
-                .stats {
-                    display: flex;
-                    gap: 1rem;
-                    margin-bottom: 2rem;
-                    justify-content: center;
-                }
-
-                .stat-card {
-                    background: white;
-                    padding: 1.5rem;
-                    border-radius: 10px;
-                    text-align: center;
-                    min-width: 150px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                }
-
-                .stat-card h3 {
-                    margin: 0 0 0.5rem 0;
-                    color: #666;
-                    font-size: 0.9rem;
-                }
-
-                .stat-card p {
-                    margin: 0;
-                    font-size: 2rem;
-                    font-weight: bold;
-                    color: #333;
-                }
-
-                .no-taxes {
-                    text-align: center;
-                    padding: 3rem;
-                    background: white;
-                    border-radius: 10px;
-                    color: #6c757d;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                }
-
-                .table-container {
-                    background: white;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }
-
-                .taxes-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-
-                .taxes-table th {
-                    background: #34495e;
-                    color: white;
-                    padding: 1rem;
-                    text-align: left;
-                    font-weight: 600;
-                    font-size: 0.9rem;
-                }
-
-                .taxes-table td {
-                    padding: 1rem;
-                    border-bottom: 1px solid #e0e0e0;
-                }
-
-                .taxes-table tr:hover {
-                    background: #f8f9fa;
-                }
-
-                .revision-date {
-                    font-weight: 600;
-                    color: #2c3e50;
-                }
-
-                .tax-percentage {
-                    color: #e74c3c;
-                    font-weight: bold;
-                    font-size: 1.1rem;
-                }
-
-                .surcharge-percentage {
-                    color: #e67e22;
-                    font-weight: bold;
-                    font-size: 1.1rem;
-                }
-
-                .total-charge {
-                    color: #27ae60;
-                    font-weight: bold;
-                    font-size: 1.2rem;
-                }
-
-                .status-badge {
-                    padding: 0.25rem 0.75rem;
-                    border-radius: 20px;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                }
-
-                .status-badge.current {
-                    background: #d4edda;
-                    color: #155724;
-                }
-
-                .status-badge.past {
-                    background: #e2e3e5;
-                    color: #383d41;
-                }
-
-                .status-badge.future {
-                    background: #fff3cd;
-                    color: #856404;
-                }
-
-                .delete-btn {
-                    background: #e74c3c;
-                    color: white;
-                    border: none;
-                    padding: 0.5rem 1rem;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    transition: background 0.3s ease;
-                }
-
-                .delete-btn:hover {
-                    background: #c0392b;
-                }
-
-                .no-action {
-                    color: #6c757d;
-                    font-style: italic;
-                }
-
-                .loading-container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                }
-
-                .loading {
-                    color: white;
-                    font-size: 1.2rem;
-                }
-
-                /* Responsive design */
-                @media (max-width: 768px) {
-                    .view-taxes-container {
-                        padding: 1rem;
-                    }
-                    
-                    .header {
-                        flex-direction: column;
-                        gap: 1rem;
-                        text-align: center;
-                    }
-                    
-                    .stats {
-                        flex-direction: column;
-                        align-items: center;
-                    }
-                    
-                    .table-container {
-                        overflow-x: auto;
-                    }
-                    
-                    .taxes-table {
-                        min-width: 700px;
-                    }
-                }
-            `}</style>
-        </div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '200px' 
+      }}>
+        <div>Loading taxes...</div>
+      </div>
     );
-}
+  }
+
+  return (
+    <Layout>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '25px'
+      }}>
+        <h2 style={{ color: '#2c3e50', margin: 0 }}>View Taxes & Charges</h2>
+        <button
+          onClick={() => navigate('/admin/add-taxes')}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#3498db',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          + Add Tax Revision
+        </button>
+      </div>
+
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        {/* ...existing code... */}
+        {taxes.length === 0 ? (
+          <div style={{ 
+            padding: '40px', 
+            textAlign: 'center', 
+            color: '#7f8c8d' 
+          }}>
+            <h3>No Tax Revisions Found</h3>
+            <p>No tax revisions are currently configured in the system.</p>
+            <button
+              onClick={() => navigate('/admin/add-taxes')}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginTop: '10px'
+              }}
+            >
+              Create First Tax Revision
+            </button>
+          </div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#34495e', color: 'white' }}>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Revision ID</th>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Revision Date</th>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Tax %</th>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Surcharge %</th>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
+                <th style={{ padding: '15px', textAlign: 'left' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {taxes.map((tax, index) => (
+                <tr key={tax.revision_id} style={{ backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white' }}>
+                  <td style={{ padding: '15px' }}>{tax.revision_id}</td>
+                  <td style={{ padding: '15px' }}>{new Date(tax.revision_date).toLocaleDateString()}</td>
+                  <td style={{ padding: '15px', fontWeight: 'bold' }}>{tax.latest_tax_percentage}%</td>
+                  <td style={{ padding: '15px', fontWeight: 'bold' }}>{tax.latest_surcharge_percentage}%</td>
+                  <td style={{ padding: '15px' }}>
+                    <span style={{
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                      fontSize: '12px',
+                      backgroundColor: isCurrentTax(tax) ? '#d4edda' : '#fff3cd',
+                      color: isCurrentTax(tax) ? '#155724' : '#856404'
+                    }}>
+                      {isCurrentTax(tax) ? 'Current' : 'Historical'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '15px' }}>
+                    <button
+                      onClick={() => navigate(`/admin/add-taxes/${tax.revision_id}`, { state: { tax } })}
+                      style={{
+                        padding: '5px 10px',
+                        backgroundColor: '#3498db',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        marginRight: '10px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteTax(tax.revision_id)}
+                      style={{
+                        padding: '5px 10px',
+                        backgroundColor: '#e74c3c',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </Layout>
+  );
+};
 
 export default ViewTaxes;
