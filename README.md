@@ -59,7 +59,7 @@ Before running the project, ensure all required dependencies are installed in th
 
 ## Running the Application
 
-### Guest 
+### Frontend 
 To start the React frontend server  on `localhost:5573`, use the following command from the root directory:
 ```bash
 npm run frontend
@@ -76,6 +76,24 @@ To start the all servers concurrently at once, use the following command from th
 ```bash
 npm start
 ```
+
+## Containerization
+
+Navigate to root directory.
+To build and run the containers in detached mode:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+To stop running containers:
+
+```bash
+docker compose -f docker-compose.dev.yml down
+```
+
+
+
 
 ## Contributors
 - [Dinura Ginige](https://github.com/Dinurang)
