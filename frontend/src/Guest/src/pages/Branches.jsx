@@ -4,24 +4,23 @@ import React, { useState, useEffect } from 'react';
 const HotelCard = ({ branch }) => {
   // Map branch names to image filenames
   const getImageForBranch = (branchName) => {
-    const imageMap = {
-      'Coast': 'coastal-branch.jpg',
-      'Hills': 'hills-branch.jpg',
-      'Urban': 'urban-branch.jpg',
-    };
-    
-    // Find a matching image or use default
-    for (const [key, value] of Object.entries(imageMap)) {
-      if (branchName.toLowerCase().includes(key.toLowerCase())) {
-        return value;
-      }
-    }
-    
-    return imageMap.Default;
+  const imageMap = {
+    'Coast': new URL('../../public/images/coastal-branch.jpg', import.meta.url).href,
+    'Hills': new URL('../../public/images/hills-branch.jpg', import.meta.url).href,
+    'Urban': new URL('../../public/images/urban-branch.jpg', import.meta.url).href,
+    'Default': new URL('../../public/images/default-branch.jpg', import.meta.url).href,
   };
+  
+  for (const [key, value] of Object.entries(imageMap)) {
+    if (branchName.toLowerCase().includes(key.toLowerCase())) {
+      return value;
+    }
+  }
+  
+  return imageMap.Default;
+};
 
-  const imageName = getImageForBranch(branch.branch_name);
-  const imageUrl = `/images/${imageName}`;
+const imageUrl = getImageForBranch(branch.branch_name);
 
   return (
     <div className="hotel-card">
