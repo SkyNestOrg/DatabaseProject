@@ -116,3 +116,6 @@ INSERT INTO `Room` (`room_number`, `current_status`, `room_type`, `branch_id`) V
 (309, 'Available', 'Budget', 3),
 (310, 'Available', 'Budget', 3);
 
+
+INSERT INTO tax_revision (revision_date, latest_tax_percentage,latest_surcharge_percentage)
+VALUES ('2025-01-01',12,1);
