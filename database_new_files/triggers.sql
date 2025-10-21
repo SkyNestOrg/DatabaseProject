@@ -46,6 +46,43 @@ END$$
 DELIMITER ;
 
 
+DELIMITER $$
+
+-- Trigger for INSERT
+CREATE TRIGGER before_bill_insert_2
+BEFORE INSERT ON bill
+FOR EACH ROW
+BEGIN
+    -- Set bill_status based on due_amount
+    IF NEW.due_amount > 0 THEN
+        SET NEW.bill_status = 'Pending';
+    ELSE
+        SET NEW.bill_status = 'Paid';
+    END IF;
+END$$
+
+-- Trigger for UPDATE
+CREATE TRIGGER before_bill_update
+BEFORE UPDATE ON bill
+FOR EACH ROW
+BEGIN
+    -- Set bill_status based on due_amount
+    IF NEW.due_amount > 0 THEN
+        SET NEW.bill_status = 'Pending';
+    ELSE
+        SET NEW.bill_status = 'Paid';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+
+
+
 
 -- Trigger to log staff modifications
 
